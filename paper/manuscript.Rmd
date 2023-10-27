@@ -1,0 +1,130 @@
+---
+title: "TANGO-CC: An open-source website for researchers to build a culture-sensitive task of gaze understanding"
+shorttitle: "measuring gaze understanding across the globe"
+author: 
+  
+  - name          : "Julia Christin Prein"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Max Planck Institute for Evolutionary Anthropology, Deutscher Platz 6, 04103 Leipzig, Germany"
+    email         : "julia_prein@eva.mpg.de"
+    role          :
+      - Conceptualization
+      - Methodology
+      - Software
+      - Investigation
+      - Formal Analysis
+      - Writing - Original Draft Preparation
+      - Writing - Review & Editing
+      
+  - name          : "Daniel B. M. Haun"
+    affiliation   : "1"
+    role          :
+      - Supervision
+      - Writing - Review & Editing
+      
+  - name          : "Manuel Bohn"
+    affiliation   : "1,2"
+    role          :
+      - Conceptualization
+      - Writing - Review & Editing
+    
+affiliation:
+  - id            : "1"
+    institution   : "Department of Comparative Cultural Psychology, Max Planck Institute for Evolutionary Anthropology, Leipzig, Germany"
+  - id            : "2"
+    institution   : "Institute of Psychology, Leuphana University Lüneburg, Germany"
+abstract: |
+  
+keywords          : "cross-cultural psychology, social-cognitive development, gaze following, individual differences, reliability"
+wordcount         : "XXX"
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : yes
+mask              : yes 
+draft             : no
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
+header-includes   :
+  - \usepackage{setspace}
+  - \captionsetup[figure]{font={stretch=1}}
+editor_options    : 
+  markdown: 
+    wrap: sentence
+bibliography      : "../../references.bib"
+---
+
+```{r setup, include = FALSE}
+library("tidyverse")
+library("papaja")
+library("kableExtra")
+library("brms")
+library("janitor")
+
+theme_set(theme_classic())
+```
+
+```{r analysis_preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+# Introduction
+- increased interest in cc research but not many new methods that enable or ease cross cultural research
+- hard to capture ind diff, even harder in cc settings
+- goal: comparable data across cultural settings
+- approach 1: standardized procedure, as similar as possible. taken here
+- approach 2: see in each cultural setting how to translate the psychological construct into experiment
+- prein2023tango: works for ind diff. reliable. 
+- supplements prein2023variation: differences between animal & human faces
+
+# Methods
+- testing setups: rural & urban
+- no prior touchscreen experience needed
+- how does website work: which variables you can select
+- output from website
+- shiny app?!
+- psychometric properties of tango germany
+- describe cc sample
+
+# Results
+- splithalf per cultural setting
+- effect of age distribution, different for each cultural setting
+- in plot: weigh sample size: x: splithalf, y: culture, size geom count: sample size
+- visualize ind diff
+- plot training trials argument for children understand to touch balloon
+- response time?
+- droup outs across cultures
+
+# Discussion
+- flexibility for researchers
+- adjust to each cultural setting: faces, languages, background scene
+- easy to add new layers to svg to adjust even further
+- minimal language demands
+- worked across 16(?) different communities already
+
+# Limitations
+- measure same construct across communities?
+- technology effects
+
+# Conclusion
+
+\newpage
+
+# References
+
+```{=tex}
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+```
+::: {#refs custom-style="Bibliography"}
+:::
+
+```{=tex}
+\endgroup
+```

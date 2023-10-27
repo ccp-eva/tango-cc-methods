@@ -1,0 +1,322 @@
+---
+title: "Tango-cc analysis"
+author: "Julia Prein"
+date: "10/27/2023"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse) # data handling etc.
+library(tidybayes) # for stat_halfeye, add_predictive_draws
+library(tidyboot) # for bootstrapped CIs
+library(brms) # modeling
+library(cmdstanr) # modeling
+library(janitor) # clean_names
+library(ggpubr) # ggarrange
+library(ggpubr)
+library(prettyR) # for describe()
+
+# load source code for geom_flat_violin()
+source("https://gist.githubusercontent.com/benmarwick/2a1bb0133ff568cbe28d/raw/fb53bd97121f7f9ce947837ef1a4c65a73bffb3f/geom_flat_violin.R")
+
+check_cmdstan_toolchain(fix = TRUE, quiet = TRUE)
+
+options(scipen = 999)
+theme_set(theme_classic())
+
+# Seed for random number generation
+set.seed(42)
+```
+
+```{r load_data}
+dataFam <- read_csv("../data/gafo-cc-clean-data-incl-fam.csv") %>%
+  filter(community != "chimfunshi") %>% 
+  mutate(
+         trialtype = factor(trialtype, levels = c("touch", "fam", "test")),
+         agegroup = floor(ageinyears), 
+         click = abs(clickdistfromtargetcenterx)/160, 
+         community = factor(community, levels = c("leipzig", "hai||om", "khwe", "windhoek", "akure", "stanford"))
+                      %>% recode(.,
+                            leipzig = "Leipzig (Germany)",
+                            akure = "Akure (Nigeria)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)"
+                            )
+         ) %>% 
+  filter(!is.na(trialtype)) %>% 
+  mutate_if(is.character,as.factor)
+
+data <- read_csv("../data/gafo-cc-clean-data.csv") %>%
+  filter(community != "chimfunshi" & !voiceover) %>% 
+  mutate(
+         agegroup = floor(ageinyears), 
+         click = abs(clickdistfromtargetcenterx)/160, 
+         community = factor(community, levels = c("leipzig", "hai||om", "khwe", "windhoek", "akure", "stanford"))
+                      %>% recode(.,
+                            leipzig = "Leipzig (Germany)",
+                            akure = "Akure (Nigeria)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)"
+                            )
+         ) %>% 
+  mutate_if(is.character,as.factor)
+
+mdata <- data %>%
+  mutate(
+          # same as: ageinyears-mean(ageinyears)
+          ageinyears = scale(ageinyears, center = T, scale = F), 
+          targetcentralityx = scale(targetcentralityx),
+          trialnr = scale(trialnr),
+  ) %>%
+  group_by(subjid, community, agegroup, ageinyears, touchscreen, household) %>%
+  summarise(mean_click = mean(click)) %>%
+  group_by(community) %>%
+  mutate(
+         household = scale(household), 
+         touchscreen = factor(touchscreen),
+  ) %>%
+  na.omit()
+```
+
+```{r sample}
+# full sample
+data %>%
+  group_by(community, agegroup) %>%
+  summarise(n= n_distinct(subjid))
+
+data %>%
+  group_by(community) %>%
+  summarise(n= n_distinct(subjid))
+
+data %>%
+  summarise(n= n_distinct(subjid))
+
+# model data
+mdata %>%
+  group_by(community, agegroup) %>%
+  summarise(n= n_distinct(subjid))
+
+mdata %>%
+  group_by(community) %>%
+  summarise(n= n_distinct(subjid))
+
+mdata %>% ungroup() %>% 
+  summarise(n= n_distinct(subjid))
+```
+
+```{r samplesize_plot}
+ggplot(data = data %>% group_by(subjid) %>% slice(1), 
+       mapping = aes(x = community, 
+                     y = ageinyears, 
+                     fill = community)) + 
+  geom_flat_violin(scale = "count", trim = T) + 
+  stat_summary(fun.data = mean_sdl,
+               fun.args = list(mult = 1),
+               geom = "pointrange",
+               position = position_nudge(0.5)) +
+  geom_dotplot(binaxis = "y",
+               dotsize = 1,
+               stackdir = "down",
+               binwidth = 0.1,
+               position = position_nudge(-0.025)) +
+  theme_classic() +
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_blank()) + 
+  guides(fill = "none") +
+  scale_y_continuous(limits = c(2, 9), breaks = seq(2, 9, 1)) + 
+  labs(x = "", y = "Age in years") +
+  facet_grid(~ community, scales="free")
+```
+
+```{r variation}
+cc_variation <- data %>% 
+  summarise(
+    imprecision_mean = mean(click_dist_balloons, na.rm = T) %>% round(2),
+    imprecision_sd = sd(click_dist_balloons, na.rm = T) %>% round(2),
+    imprecision_min = min(click_dist_balloons, na.rm = T),
+    imprecision_max = max(click_dist_balloons, na.rm = T),
+  )
+
+cc_variation_communities <- data %>% 
+  group_by(age_group, community) %>%
+  summarise(
+    imprecision_mean = mean(click_dist_balloons, na.rm = T) %>% round(2),
+    imprecision_sd = sd(click_dist_balloons, na.rm = T) %>% round(2),
+    imprecision_min = min(click_dist_balloons, na.rm = T),
+    imprecision_max = max(click_dist_balloons, na.rm = T),
+  )
+
+cc_variation
+write.csv(cc_variation, "../saves/cc_variation.csv", quote = F, row.names = F)
+saveRDS(cc_variation, "../saves/cc_variation.rds")
+
+cc_variation_communities
+write.csv(cc_variation_communities, "../saves/cc_variation_communities.csv", quote = F, row.names = F)
+saveRDS(cc_variation_communities, "../saves/cc_variation_communities.rds")
+```
+
+```{r variation_plot}
+ggplot() +
+  geom_point(data = mdata %>% filter(community == "Leipzig (Germany)"), aes(x = (ageinyears + mean(data$ageinyears)), y = mean_click, col = community), pch = 19, alpha = 0.5) +
+  theme_classic() +
+  scale_color_ptol(name = "Community") +
+  scale_fill_ptol(name = "Community") +
+  scale_x_continuous(limits = c(2, 9), breaks = seq(2, 9, 0.5)) + 
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, 1)) + 
+  labs(x = "Age in years", y = "Average imprecision in target width")
+
+ggplot() +
+  geom_point(data = mdata, aes(x = (ageinyears + mean(data$ageinyears)), y = mean_click, col = community), pch = 19, alpha = 0.5) +
+  theme_classic() +
+  scale_color_ptol(name = "Community") +
+  scale_fill_ptol(name = "Community") +
+  scale_x_continuous(limits = c(2, 9), breaks = seq(2, 9, 0.5)) + 
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, 1)) + 
+  labs(x = "Age in years", y = "Average imprecision in target width")
+```
+
+```{r gazefunnel}
+data %>%
+  group_by(targetcentralityx) %>%
+  mutate(chance_upper = (targetcentralityx + 960)/2,
+         chance_lower = -((targetcentralityx + 960)/2),
+         center_lower = -targetcentralityx,
+         center_upper = targetcentralityx) %>%
+  ggplot(aes(x = targetcentralityx, y = clickdistfromtargetcenterx, col = community)) +
+  labs(x = "Target centrality", y = "Imprecision") +
+  geom_hline(yintercept = 0, lty = 2, size = 1, alpha = 0.75) +
+  geom_point(pch = 1, alpha = 0.5) +
+  scale_color_colorblind() +
+  scale_x_continuous(breaks = seq(0, 960, 120)) +
+  scale_y_continuous(breaks = seq(-1920, 1920, 480)) +
+  theme_classic()
+```
+
+```{r clicks_bin}
+clicks_bin <- data %>%
+  mutate(targetposition = factor(targetposition, levels = c(1:10))) %>%
+  group_by(community, targetposition) %>%
+  tidyboot_mean(col = click)
+
+ggplot(clicks_bin, aes(x = targetposition, y = mean, col = community)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), pch = 1, alpha = 1, position = position_dodge(width = .5)) +
+  labs(x = "Target position (binned)", y = "Average imprecision in target width") +
+  theme_classic() +
+  scale_color_ptol(name = "Community") +
+  scale_fill_ptol(name = "Community")
+```
+
+```{r famtrials_descriptives}
+# see which trials were the most "difficult"
+dataFam %>% 
+  group_by(trialtype, community) %>%
+  summarise(mean = mean(abs(clickdistfromtargetcenterx)), sd = sd(abs(clickdistfromtargetcenterx))) %>% 
+  arrange(mean)
+
+# identify kids that did clicked more than two balloon widths away from actual target position
+dataFam %>% 
+  filter(trialtype != "test" & click > 2) %>% 
+  select(subjid, trialtype, agegroup, community, click) %>% 
+  arrange(abs(click))
+
+dataFam %>% 
+  filter(click > 2) %>% 
+  select(trialtype, agegroup, community) %>% 
+  ftable()
+```
+
+
+```{r famtrials}
+# RESOURCES:
+# https://orchid00.github.io/tidy_raincloudplot
+# https://www.r-bloggers.com/2021/07/ggdist-make-a-raincloud-plot-to-visualize-distribution-in-ggplot2/
+# https://twitter.com/rogierk/status/1194591652452675584
+# https://gist.github.com/benmarwick/b7dc863d53e0eabc272f4aad909773d2
+
+ggplot(data = dataFam, 
+       mapping = aes(x = "", 
+                     y = click, 
+                     fill = trialtype)) + 
+  geom_flat_violin(scale = "count", 
+                   trim = FALSE) + 
+  stat_summary(fun.data = mean_sdl, 
+               fun.args = list(mult = 1), 
+               geom = "pointrange", 
+               position = position_nudge(0.05)) + 
+  geom_dotplot(binaxis = "y", 
+               dotsize = 1, 
+               stackdir = "down", 
+               binwidth = 0.1, 
+               position = position_nudge(-0.025)) + 
+  theme(legend.position = "none") + guides(fill="none") +
+  labs(x = "", 
+       y = "Imprecision in balloon widths") +
+  facet_grid(trialtype ~ community) + # , scales="free"
+  theme_classic()
+```
+
+```{r dropouts}
+dropouts <- data %>%
+  group_by(subjid) %>%
+  mutate(
+    completedTrials = n(),
+    completedStudy = ifelse(completedTrials <= 15, FALSE, TRUE), # depending on voice over included or not..
+  ) %>% 
+  filter(!completedStudy) %>% 
+  group_by(community, agegroup) %>%
+  summarise(n = n_distinct(subjid))
+
+ggplot(dropouts, aes(x = community, y = n, fill = agegroup)) +
+  geom_bar(stat="identity") + 
+  theme_minimal()
+```
+
+```{r responsetime}
+data %>%
+  select(responsetime) %>%
+  mutate(responsetime = responsetime / 1000) %>% 
+  describe()
+
+data %>% 
+  ggplot(., aes((responsetime/1000))) + 
+  geom_density(alpha = 0.2, fill = "grey10") + 
+  geom_vline(aes(xintercept = median(clientscreenscaling)), color = "#29AF7FFF", size = 1, linetype = "longdash") +
+  geom_vline(aes(xintercept = mean(clientscreenscaling, na.rm = TRUE)), color = "#FDE725FF", size = 1, linetype = "longdash")
+
+data %>% 
+  ggplot(., aes(x = (responsetime/1000), y = click)) + 
+  geom_point() +
+  geom_smooth(method = "lm", color = "#7D2636", alpha = 0.8) +
+  stat_cor(r.accuracy = 0.01, p.accuracy = 0.01) + 
+  scale_x_continuous(limits = c(0, 175), breaks = seq(0, 175, by = 50)) + 
+  theme_minimal()
+
+ggplot(data = dataFam, 
+       mapping = aes(x = "", 
+                     y = responsetime/1000, 
+                     fill = trialtype)) + 
+  geom_flat_violin(scale = "count", 
+                   trim = FALSE) + 
+  stat_summary(fun.data = mean_sdl, 
+               fun.args = list(mult = 1), 
+               geom = "pointrange", 
+               position = position_nudge(0.05)) + 
+  geom_dotplot(binaxis = "y", 
+               dotsize = 1, 
+               stackdir = "down", 
+               binwidth = 0.1, 
+               position = position_nudge(-0.025)) + 
+  theme(legend.position = "none") + guides(fill="none") +
+  labs(x = "", 
+       y = "Response time") +
+  facet_grid(trialtype ~ community, scales="free") +
+  theme_classic()
+```
