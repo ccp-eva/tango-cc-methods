@@ -19,18 +19,70 @@ library(janitor) # clean_names
 library(ggpubr) # ggarrange
 library(splithalfr) # split half reliability
 library(ggridges) # for ridge plot
+library(RColorBrewer) # for color palette
+library(pals) # for color palette
 
-options(scipen = 999)
-theme_set(theme_classic())
+options(scipen = 999) # turn off scientific notation
+theme_set(theme_classic()) # set theme
 
 # Seed for random number generation
 set.seed(42)
+
+# color palette
+# qual_col_pals = brewer.pal.info[brewer.pal.info$colorblind == TRUE,]
+# col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+# 
+# # kelly palette of 22 colors maximize the contrast between colors in a set if the colors are chosen in sequential order. Kelly paid attention to the needs of people with color blindness
+# colors=kelly(n=n_distinct(data$community)+1)
+
+# create a custom color pallette with 17 easily distinguishable, different colors
+custom_palette <- c(
+  brewer.pal(11, "RdYlGn"),
+  brewer.pal(6, "BuPu")
+)
 ```
 
 ```{r load_data}
-data <- read_csv("../data/data.csv") 
+data <- read_csv("../data/data.csv") %>% 
+    mutate(continent = ifelse(
+    community %in% c("leipzig", "plymouth"), "Europe", 
+    ifelse(
+      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+    )
+  ))%>%
+  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+  mutate(community = recode(community,
+                            akure = "Akure (Nigeria)",
+                            leipzig = "Leipzig (Germany)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)",
+                            chimfunshi = "Chimfunshi (Zambia)",
+                            mexico = "Ocuilan (Mexico)",
+                            plymouth = "Plymouth (UK)",
+                            beijing = "Beijing (China)", 
+                            india = "Pune (India)",
+                            buenos_aires = "Buenos Aires (Argentina)",
+                            auckland = "Auckland (New Zealand)",
+                            turkey = "Malatya (Türkiye)",
+                            bandongo = "Bandongo (Rep. Congo)",
+                            bayaka = "BaYaka (Rep. Congo)", 
+                            uganda = "Nyabyeya (Uganda)")
+  ) %>% 
+  mutate(
+    click = abs(clickdistfromtargetcenterx)/160,
+    mean_click = mean(abs(clickdistfromtargetcenterx) / 160),
+    .by = c(ageinyears, community, subjid)
+  )
 
-mdata <- read_csv("../data/data.csv")%>%
+mdata <- data %>%
+  filter(trialtype == "test",
+         voiceover == F
+         )%>%
+  mutate(trialnr = as.numeric(factor(trialnr)))%>%
   group_by(subjid, community, age_group, ageinyears)%>%
   summarise(impr = mean(abs(clickdistfromtargetcenterx)))%>%
   ungroup()%>%
@@ -70,23 +122,24 @@ mdata %>% ungroup() %>%
 
 # Internal consistency
 
-```{r}
+```{r exclude_children}
 # children who did not finish all trials are removed (only 5 children total)
-
 exclude <- data %>%
+  filter(trialtype == "test", voiceover == F) %>%
   group_by(subjid) %>%
   summarise(n= n())%>%
   filter(n < 15)%>%
   pull(subjid)
 
 reli_data <- data%>%
+  filter(trialtype == "test", voiceover == F) %>%
   filter(!subjid %in% exclude)%>%
   mutate(pos_cent = as.character(abs(5-targetposition)))
 ```
 
 ## Odd-even
 
-```{r}
+```{r odd_even_plot}
 reli_data%>%
   mutate(half = ifelse(trialnr %% 2 == 0, "half_1", "half_2"))%>%
   group_by(subjid, community, half)%>%
@@ -97,7 +150,7 @@ reli_data%>%
   ggplot(aes(x = reli, y = community))+
   geom_vline(xintercept = 0, lty = 3, alpha = .75)+
   geom_point(alpha = .5)+
-  #geom_pointrange(aes(xmin = lci, xmax = uci))+
+  # geom_pointrange(aes(xmin = lci, xmax = uci))+
   scale_x_continuous(limits = c(-0.5, 1), breaks = c(-0.5, 0, 0.5, 0.6,0.7, 0.8, 0.9, 1))+
   ggtitle("Simple odd-even split")+
   theme_minimal()
@@ -106,7 +159,7 @@ reli_data%>%
 
 ## Stratified by target position (categorical target centrality)
 
-```{r}
+```{r stratified_targetposition_data}
 # fn_mean <- function(ds) {
 #   return(mean(abs(ds$clickdistfromtargetcenterx), na.rm = TRUE))
 # }
@@ -146,10 +199,9 @@ reli_data%>%
 # saveRDS(rel, "../saves/stratified_internal_consistency.rds")
 
 rel <- readRDS("../saves/stratified_internal_consistency.rds")
-
 ```
 
-```{r}
+```{r stratified_targetposition_plot}
 ggplot(rel, aes(x = reli, y = community))+
   geom_vline(xintercept = 0, lty = 3, alpha = .75)+
   geom_density_ridges(col = "white", alpha = .5,rel_min_height = 0.01,)+
@@ -162,7 +214,7 @@ ggplot(rel, aes(x = reli, y = community))+
 
 ## Stratefied and age-corrected
 
-```{r}
+```{r stratified_agecorrected_data}
 # # estimate age-corrected reliability
 # # run model first for one community to use update()
 # split <- split_df(
@@ -228,8 +280,7 @@ ggplot(rel, aes(x = reli, y = community))+
 model_cor <- readRDS("../saves/age_corrected_internal_consistency.rds")  
 ```
 
-```{r}
-
+```{r stratified_agecorrected_plot}
 ggplot(model_cor, aes(x = Estimate, y = community))+
   geom_vline(xintercept = 0, lty = 3, alpha = .75)+
   geom_density_ridges(col = "white", alpha = .5, rel_min_height = 0.01,)+
@@ -238,6 +289,224 @@ ggplot(model_cor, aes(x = Estimate, y = community))+
   ggtitle("Stratified by target position - model-based age correction")+
   scale_x_continuous(limits = c(-1, 1), breaks = c(-0.5, 0, 0.5, 0.6,0.7, 0.8, 0.9, 1))+
   theme_minimal()
+```
 
+```{r beautified_plot}
+model_cor <- model_cor %>% 
+    mutate(continent = ifelse(
+    community %in% c("leipzig", "plymouth"), "Europe", 
+    ifelse(
+      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+    )
+  ))%>%
+  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+  mutate(community = recode(community,
+                            akure = "Akure (Nigeria)",
+                            leipzig = "Leipzig (Germany)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)",
+                            chimfunshi = "Chimfunshi (Zambia)",
+                            mexico = "Ocuilan (Mexico)",
+                            plymouth = "Plymouth (UK)",
+                            beijing = "Beijing (China)", 
+                            india = "Pune (India)",
+                            buenos_aires = "Buenos Aires (Argentina)",
+                            auckland = "Auckland (New Zealand)",
+                            turkey = "Malatya (Türkiye)",
+                            bandongo = "Bandongo (Rep. Congo)",
+                            bayaka = "BaYaka (Rep. Congo)", 
+                            uganda = "Nyabyeya (Uganda)")
+  )
+
+model_cor %>% 
+  ggplot(., aes(x = Estimate, y = community))+
+  geom_vline(xintercept = 0, lty = 3, alpha = .75)+
+  geom_density_ridges(col = "white", alpha = .5, rel_min_height = 0.01, fill="#29485D")+
+  geom_point(alpha = .5)+
+  #geom_pointrange(aes(xmin = `l-95% CI`, xmax = `u-95% CI`), alpha = .5)+
+  # ggtitle("Stratified by target position - model-based age correction")+
+  scale_x_continuous(limits = c(-1, 1), breaks = c(-1, -0.5, 0, 0.5, 0.6,0.7, 0.8, 0.9, 1))+
+  theme_light() +
+  labs(y = "", x = "Splithalf reliability estimate", caption = "(stratified by target position; model-based age correction)")
+
+ggsave("../figures/splithalf_stratified_agecorrected.png", width = 8, height = 5, scale = 1)
+```
+
+```{r scatterplot}
+reli_data %>% 
+  ggplot() +
+  geom_point(aes(x = ageinyears, y = mean_click, col = community), alpha = 0.9) +
+  scale_color_manual(values = custom_palette) +
+  scale_x_continuous(limits = c(2, 11), breaks = seq(2, 11, 1)) +
+  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
+  labs(x = "Age in years", y = "Average absolute imprecision in target width", col = "")
+
+ggsave("../figures/age_imprecision.png", width = 8, height = 5, scale = 1)
+```
+
+```{r ind_diff}
+data %>% 
+  summarise(mean_click = mean(click), .by = c(community, ageinyears, subjid)) %>%
+  ggplot(aes(x = community, y = mean_click, col = ageinyears)) +
+  geom_jitter(width = 0.2, height = 0.2, size = 0.9, alpha = 0.9) +
+  scale_color_viridis_c(direction = -1) +
+  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1), 
+    plot.margin = margin(l = 25)
+  ) +
+  labs(x = "", y = "Average absolute imprecision in target width", col = "Age in years")
+
+ggsave("../figures/ind_diff.png", width = 8, height = 5, scale = 1)
+```
+
+
+```{r dev_trajectory}
+dev_model <- brm(impr ~ age + (0 + half | subjid),
+                data   = mdata,
+                family = lognormal(),
+                warmup = 1000,
+                iter   = 3000,
+                control = list(adapt_delta = 0.95),
+                chains = 4,
+                cores  = 4)
+
+full_model <- brm(mean_click ~ ageinyears + touchscreen + household + (ageinyears + touchscreen + household | community), 
+                              data   = mdata, 
+                              family = "lognormal",
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4) %>% 
+  add_criterion(., c("waic","loo"))
+```
+
+```{r samplesize_plot}
+# load source code for geom_flat_violin()
+source("https://gist.githubusercontent.com/benmarwick/2a1bb0133ff568cbe28d/raw/fb53bd97121f7f9ce947837ef1a4c65a73bffb3f/geom_flat_violin.R")
+library(Hmisc)
+
+plot_data %>% 
+  summarise(click = mean(click), .by = c(community, ageinyears)) %>%
+  ggplot(mapping = aes(x = community, 
+                     y = ageinyears, 
+                     fill = community)) + 
+  geom_flat_violin(scale = "count", trim = T) + 
+  geom_dotplot(binaxis = "y",
+               dotsize = 1,
+               stackdir = "down",
+               binwidth = 0.1,
+               position = position_nudge(-0.025)) +
+  guides(fill = "none") +
+  scale_y_continuous(limits = c(2, 11), breaks = seq(2, 11, 1)) + 
+  labs(x = "", y = "Age in years") + 
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) + 
+  scale_fill_manual(values = custom_palette)
+
+ggsave("../figures/age_distribution.png", width = 10, height = 5, scale = 1.1)
+```
+
+```{r u_plot}
+clicks_bin <- plot_data %>%
+  mutate(targetposition = factor(targetposition, levels = c(1:10))) %>%
+  group_by(community, targetposition) %>%
+  tidyboot_mean(column = click)
+
+clicks_bin %>% 
+  ggplot(aes(x = targetposition, y = mean, col = community)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), pch = 20, alpha = 1, position = position_dodge(width = .5)) +
+  labs(x = "Target position (binned)", y = "Average absolute imprecision in target width", col = "") +
+  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
+  scale_color_manual(values = custom_palette) +
+  scale_fill_manual(values = custom_palette)
+
+ggsave("../figures/target_position.png", width = 8, height = 4, scale = 1.1)
+```
+
+```{r training_plot}
+data %>% 
+  mutate(trialtype = recode(trialtype, touch = "Training 1", fam = "Training 2", test = "Test") %>% as_factor(.)) %>% 
+  na.omit() %>% 
+  summarise(mean_click = mean(click), .by = c(community, subjid, ageinyears, trialtype)) %>%
+  ggplot(aes(x = community, y = mean_click, col = ageinyears)) +
+  geom_jitter(width = 0.25, size = 0.9, alpha = 0.9) +
+  scale_color_viridis_c(direction = -1) +
+  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1), 
+    plot.margin = margin(l = 25)
+  ) +
+  facet_wrap(~trialtype, ncol = 1) +
+  labs(x = "", y = "Average absolute imprecision in target width", col = "Age in years")
+
+ggsave("../figures/training.png", width = 11, height = 5, scale = 1)
+```
+
+```{r per_culture_plot}
+# function to suppress labels
+delete_no_display <- function(v) {
+  if_else(str_detect(v, 'no_display'), '', v)
+}
+
+data %>% 
+  mutate(trialtype = recode(trialtype, touch = "Training 1", fam = "Training 2", test = "Test") %>% as_factor(.)) %>%
+  na.omit() %>%
+  summarise(mean_click = mean(click), .by = c(continent, community, subjid, ageinyears, trialtype)) %>% 
+  mutate(
+    continent = fct_inorder(continent) %>% fct_rev(.), 
+    # so that first facet row doesnt show x axis labels
+    trialtype = if_else(continent == "Africa",
+                              as.character(trialtype),
+                              paste0(as.character(trialtype), 'no_display')) %>% as_factor(.) %>% fct_relevel(., "Training 1", "Training 2", "Test")
+  ) %>%
+  ggplot(aes(x = trialtype, y = mean_click, col = ageinyears)) +
+  geom_jitter(width = 0.2, size = 0.9, alpha = 0.9) +
+  scale_color_viridis_c(direction = -1) +
+  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
+  theme_light() +
+  facet_wrap(~ continent * community, nrow = 2, scales="free_x") +
+    theme(
+    axis.text.x = element_text(angle = 30, hjust = 1), 
+    legend.position = c(0.95, 0.25), 
+    axis.ticks.x = element_blank(),
+  ) +
+  scale_x_discrete(label = delete_no_display) +
+  labs(x = "", y = "Average absolute imprecision in target width", col = "Age in years")
+
+ggsave("../figures/per_culture.png", width = 11, height = 5, scale = 1.3)
+```
+
+```{r sd_plot}
+sd_df <- data %>% 
+  add_row(community = "OVERALL") %>% 
+  summarise(sd_ind = sd(click), .by = c(community, subjid, ageinyears, mean_click)) %>%
+  mutate(
+    mean_community = mean(mean_click, na.rm = TRUE),
+    sd_community = sd(mean_click, na.rm = TRUE),
+    .by = community
+  ) %>%
+  mutate(sd_overall = sd(mean_community, na.rm = TRUE), facet = ifelse(community == "OVERALL", "OVERALL", "COMMUNITY"))
+
+# plot sd of individual and community means
+sd_df %>% 
+  ggplot() +
+  geom_jitter(data = sd_df %>%  filter(facet == "COMMUNITY"), aes(x = community, y = sd_ind, col = ageinyears), width = 0.1, size = 0.9, alpha = 0.5) +
+  geom_point(data = sd_df %>%  filter(facet == "COMMUNITY"), aes(x = community, y = sd_community), size = 3, pch = 18) +
+  geom_point(data = sd_df %>%  filter(facet == "OVERALL"), aes(x = "OVERALL", y = sd_overall), size = 5, pch = 18, color = "purple") +
+  facet_grid(~ facet, scales = "free", space = "free") +
+  scale_color_viridis_c(direction = -1) +
+  scale_y_continuous(limits = c(0, 4), breaks = seq(0, 4, 1)) +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1), 
+    plot.margin = margin(l = 25), 
+    strip.text = element_blank()
+  ) +
+  labs(x = "", y = "Standard deviation of clicks", col = "Age in years")
+
+ggsave("../figures/sd_plot.png", width = 10, height = 5, scale = 1)
 ```
 
