@@ -22,11 +22,12 @@ library(ggridges) # for ridge plot
 library(RColorBrewer) # for color palette
 library(pals) # for color palette
 library(Hmisc) # for kelly color palette
+library(ggrepel) # for geom_text_repel
 # load source code for geom_flat_violin()
 source("https://gist.githubusercontent.com/benmarwick/2a1bb0133ff568cbe28d/raw/fb53bd97121f7f9ce947837ef1a4c65a73bffb3f/geom_flat_violin.R")
 
 options(scipen = 999) # turn off scientific notation
-theme_set(theme_classic()) # set theme
+theme_set(theme_light()) # set theme
 
 # Seed for random number generation
 set.seed(42)
@@ -46,7 +47,8 @@ custom_palette <- c(
 ```
 
 ```{r load_data}
-complete_data <- read_csv("../data/data.csv")
+complete_data <- read_csv("../data/data.csv") %>% 
+  mutate(age_group = floor(ageinyears))
 ```
 
 ```{r data_preparation}
@@ -104,6 +106,8 @@ mdata <- data %>%
   na.omit()
 ```
 
+# Sample 
+
 ```{r sample}
 # full sample
 all_trials %>%
@@ -149,54 +153,83 @@ data <- data %>% filter(!subjid %in% exclude)
 mdata <- mdata %>% filter(!subjid %in% exclude)
 ```
 
+```{r samplesize_table}
+# sample size table
+sample_table <- data %>%
+  group_by(community, age_group) %>%
+  summarise(n = n_distinct(subjid)) %>%
+  arrange(age_group) %>% 
+  pivot_wider(names_from = age_group, values_from = n) %>% 
+  arrange(community) %>%
+  rename(Community = community) %>% 
+  replace(is.na(.), 0) %>% 
+  # total per community added as column
+  mutate(Total = sum(across(where(is.numeric)))) %>% 
+  ungroup() %>% 
+  # total per age added as row
+  bind_rows(summarise(.,
+                      across(where(is.numeric), sum),
+                      across(where(is.character), ~"Total")))
+
+saveRDS(sample_table, "../saves/sample_table.rds")
+```
+
 ```{r samplesize_plot}
 data %>% 
   summarise(click = mean(imprecision), .by = c(community, ageinyears)) %>%
-  ggplot(mapping = aes(x = community, 
-                     y = ageinyears, 
-                     fill = community)) + 
-  geom_flat_violin(scale = "count", trim = T) + 
+  ggplot(mapping = aes(x = community, y = ageinyears)) + 
+  geom_flat_violin(scale = "count", trim = T, fill = "#29485D", alpha = 0.75) + 
   geom_dotplot(binaxis = "y",
                dotsize = 1,
                stackdir = "down",
                binwidth = 0.1,
-               position = position_nudge(-0.025)) +
-  guides(fill = "none") +
+               position = position_nudge(-0.025), 
+               fill = "#ffffff"
+               ) +
   scale_y_continuous(limits = c(2, 11), breaks = seq(2, 11, 1)) + 
   labs(x = "", y = "Age in years") + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1)) + 
-  scale_fill_manual(values = custom_palette)
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) 
 
 ggsave("../figures/age_distribution.png", width = 10, height = 5, scale = 1.1)
 ```
 
 # Variation
 
-```{r scatterplot}
-mdata %>% 
-  ggplot() +
-  geom_point(aes(x = ageinyears, y = mean_imprecision, col = community), alpha = 0.9) +
-  scale_color_manual(values = custom_palette) +
-  scale_x_continuous(limits = c(2, 11), breaks = seq(2, 11, 1)) +
-  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
-  labs(x = "Age in years", y = "Average absolute imprecision in target width", col = "")
+```{r model_density}
+age_model <- brm(mean_imprecision ~ age + (1 | subjid),
+                data   = mdata,
+                family = lognormal(),
+                warmup = 2000,
+                iter   = 6000,
+                control = list(adapt_delta = 0.95),
+                chains = 4,
+                cores  = 4)
 
-ggsave("../figures/age_imprecision.png", width = 8, height = 5, scale = 1)
-```
+age_model
 
-```{r ind_diff}
-mdata %>% 
-  ggplot(aes(x = community, y = mean_imprecision, col = ageinyears)) +
-  geom_jitter(width = 0.2, height = 0.2, size = 0.9, alpha = 0.9) +
-  scale_color_viridis_c(direction = -1) +
-  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
-  theme(
-    axis.text.x = element_text(angle = 30, hjust = 1), 
-    plot.margin = margin(l = 25)
+nd <- mdata %>% 
+  select(-c(mean_imprecision))
+  
+# extract model predictions for mock data
+pred_agecorrected <- fitted(age_model, newdata = nd, re_formula = NA) %>% as_tibble() %>% bind_cols(mdata)
+
+density_plot <- pred_agecorrected %>% 
+  ggplot(aes(x = Estimate, y = fct_rev(community))) +
+  geom_density_ridges(
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.05, height = 0),
+    point_shape = '|', point_size = 2, point_alpha = 1, point_color = "#ffffff",
+    alpha = 1,
+    fill = "#29485D", 
+    col = "#ffffff", 
+    scale = 1.5
   ) +
-  labs(x = "", y = "Average absolute imprecision in target width", col = "Age in years")
+  labs(x = "Absolute imprecision in target width", y = "", fill = "Community") +
+  expand_limits(y = c(1, 18.5)) + 
+  scale_x_continuous(limits = c(0.5, 4), breaks = seq(0, 4, 0.5)) +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
-ggsave("../figures/ind_diff.png", width = 8, height = 5, scale = 1)
+density_plot
 ```
 
 ```{r training_trials}
@@ -205,290 +238,103 @@ delete_no_display <- function(v) {
   if_else(str_detect(v, 'no_display'), '', v)
 }
 
-all_trials %>% 
+training_trials_plot <- all_trials %>% 
   mutate(trialtype = recode(trialtype, touch = "Training 1", fam = "Training 2", test = "Test") %>% as_factor(.)) %>%
   na.omit() %>%
-  summarise(mean_click = mean(imprecision), .by = c(continent, community, subjid, ageinyears, trialtype)) %>% 
+  summarise(mean_click = mean(imprecision), .by = c(community, subjid, ageinyears, trialtype)) %>% 
   mutate(
-    continent = fct_inorder(continent) %>% fct_rev(.), 
     # so that first facet row doesnt show x axis labels
-    trialtype = if_else(continent == "Africa",
+    trialtype = if_else(community %in% c("Leipzig (Germany)", "Malatya (Türkiye)", "Nyabyeya (Uganda)", "Ocuilan (Mexico)", "Plymouth (UK)", "Pune (India)", "Stanford (USA)", "Windhoek (Namibia)"),
                               as.character(trialtype),
                               paste0(as.character(trialtype), 'no_display')) %>% as_factor(.) %>% fct_relevel(., "Training 1", "Training 2", "Test")
   ) %>%
   ggplot(aes(x = trialtype, y = mean_click, col = ageinyears)) +
-  geom_jitter(width = 0.2, size = 0.9, alpha = 0.9) +
+  geom_jitter(width = 0.2, size = 0.7, alpha = 0.7) +
   scale_color_viridis_c(direction = -1) +
   scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
-  theme_light() +
-  facet_wrap(~ continent * community, nrow = 2, scales="free_x") +
-    theme(
+  facet_wrap(~ community, nrow = 2, scales="free_x") +
+  theme(
     axis.text.x = element_text(angle = 30, hjust = 1), 
-    legend.position = c(0.95, 0.25), 
+    legend.position = c(0.96, 0.25), 
     axis.ticks.x = element_blank(),
+    strip.text.x = element_text(size = 7.5), 
+    legend.title = element_text(size = 8),
   ) +
   scale_x_discrete(label = delete_no_display) +
   labs(x = "", y = "Average absolute imprecision in target width", col = "Age in years")
 
-ggsave("../figures/training_trials.png", width = 11, height = 5, scale = 1.3)
+training_trials_plot
 ```
 
-```{r sd_plot}
-sd_df <- data %>% 
-  add_row(community = "OVERALL") %>% 
+```{r icc}
+within_person <- data %>%
+  group_by(subjid) %>%
   summarise(
-    mean_ind = mean(imprecision),
-    sd_ind = sd(imprecision), 
-    .by = c(community, subjid, ageinyears)
-  ) %>%
-  mutate(
-    mean_community = mean(mean_ind, na.rm = TRUE),
-    sd_community = sd(mean_ind, na.rm = TRUE),
-    .by = community
-  ) %>%
-  mutate(sd_overall = sd(mean_community, na.rm = TRUE), facet = ifelse(community == "OVERALL", "OVERALL", "COMMUNITY"))
-
-# plot sd of individual and community means
-sd_df %>% 
-  ggplot() +
-  geom_jitter(data = sd_df %>%  filter(facet == "COMMUNITY"), aes(x = community, y = sd_ind, col = ageinyears), width = 0.1, size = 0.9, alpha = 0.5) +
-  geom_point(data = sd_df %>%  filter(facet == "COMMUNITY"), aes(x = community, y = sd_community), size = 3, pch = 18) +
-  geom_point(data = sd_df %>%  filter(facet == "OVERALL"), aes(x = "OVERALL", y = sd_overall), size = 5, pch = 18, color = "purple") +
-  facet_grid(~ facet, scales = "free", space = "free") +
-  scale_color_viridis_c(direction = -1) +
-  scale_y_continuous(limits = c(0, 4), breaks = seq(0, 4, 1)) +
-  theme(
-    axis.text.x = element_text(angle = 30, hjust = 1), 
-    plot.margin = margin(l = 25), 
-    strip.text = element_blank()
-  ) +
-  labs(x = "", y = "Standard deviation of clicks", col = "Age in years")
-
-ggsave("../figures/sd_plot.png", width = 10, height = 5, scale = 1)
-```
-
-# Dev Model 
-
-```{r models}
-# age scaled across communities; touchscreen factor, household scaled per community
-# full_model <- brm(mean_imprecision ~ age + touchscreen + household + (age + touchscreen + household | community),
-#                 data   = mdata,
-#                 family = lognormal(),
-#                 warmup = 1000,
-#                 iter   = 3000,
-#                 control = list(adapt_delta = 0.95),
-#                 chains = 4,
-#                 cores  = 4) %>% 
-#   add_criterion(., c("waic","loo"))
-# 
-# saveRDS(full_model, "../saves/full_model.rds")
-
-full_model <- readRDS("../saves/full_model.rds")
-
-# only age
-# age_model <- brm(mean_imprecision ~ age + (age | community),
-#                 data   = mdata,
-#                 family = lognormal(),
-#                 warmup = 1000,
-#                 iter   = 3000,
-#                 control = list(adapt_delta = 0.95),
-#                 chains = 4,
-#                 cores  = 4) %>% 
-#   add_criterion(., c("waic","loo"))
-# 
-# saveRDS(age_model, "../saves/age_model.rds")
-
-age_model <- readRDS("../saves/age_model.rds")
-```
-
-```{r model_comparison}
-```
-
-```{r age_model_plot}
-ndata <- mdata %>%
-  distinct(community) %>%
-  expand_grid(age = unique(mdata$age))
-
-post <- fitted(age_model, newdata = ndata, re_formula = ~ (age | community)) %>%
-  as_tibble() %>%
-  bind_cols(ndata) %>%
-  # because we scaled age beforehand, we need to add the mean age back in
-  mutate(age = age + mean(mdata$ageinyears))
-
-ggplot() +
-  geom_smooth(data = post, aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = community, col = community), alpha = .25, stat = "identity") +
-  geom_point(data = mdata, aes(x = (age + mean(mdata$ageinyears)), y = mean_imprecision, col = community), pch = 19, alpha = 0.5) +
-  scale_x_continuous(limits = c(2, 11), breaks = seq(2, 11, 1)) +
-  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
-  scale_color_manual(values = custom_palette) +
-  scale_fill_manual(values = custom_palette) +
-  labs(x = "Age in years", y = "Average imprecision in target width", fill = "", col = "")
-
-ggsave("../figures/age_model.png", width = 8, height = 5, scale = 1)
-```
-
-```{r posterior_samples}
-ps <- full_model %>% posterior_samples() %>%
-  select("b_Intercept", "b_age", "b_household", "b_touchscreen1", starts_with("r_community")) %>% 
-  pivot_longer(cols = c(5:72), names_to = "community", values_to = "value") %>%
-  mutate(
-         community = str_remove(community, "r_community"),
-         community = str_remove(community, "\\]"), 
-         community = str_remove(community, "\\["), 
-         ) %>%
-  separate(col = community, into = c("community", "parameter"), sep = ",") %>% 
-  pivot_longer(cols = c(b_Intercept, b_household, b_age, b_touchscreen1), names_to = "fix_param", values_to = "fix_value") %>%
-  mutate(fix_param = tolower(str_remove(fix_param,"b_")), 
-         parameter = tolower(parameter), 
-         fix_param = str_remove(fix_param, "1"), 
-         parameter = str_remove(parameter, "1"), 
-         community = str_replace(community, "\\.", " "), 
-         community = factor(community) %>% 
-           recode(., 
-                  `Auckland (New.Zealand)` = "Auckland (New Zealand)", 
-                  `Bandongo (Rep..Congo)` = "Bandongo (Rep. Congo)",
-                  `BaYaka (Rep..Congo)` = "BaYaka (Rep. Congo)"
-                  )
-  ) %>%
-  filter(parameter == fix_param) %>%
-  mutate(est = value + fix_value)
-```
-
-```{r age_estimates}
-ps %>% 
-  filter(parameter == "age") %>%
-  ggplot(aes(y = fct_rev(community), x = est, fill = stat(x) > 0)) +
-  tidybayes::stat_halfeye(alpha = .8, .width = c(.95, .80), scale = 1) +
-    labs(x = "Age - posterior estimate", y ="") +
-  guides(fill = "none") +
-  geom_vline(xintercept = fixef(full_model) %>% as_tibble(rownames = "param") %>% filter(param == "age") %>% pull(Estimate), linetype = "dashed") +
-  geom_vline(xintercept = 0, linetype = "solid") +
-  scale_fill_manual(values = c("#29485D", "grey")) +
-  theme_minimal()
-```
-
-# Demographics 
-
-```{r demographics_descriptives}
-demographics <- data %>%
-  mutate(older_children = children - 1 - younger_children) %>%
-  group_by(community)%>%
-  summarise(screen = mean(screen, na.rm = T),
-            touchscreen = mean(touchscreen, na.rm = T), 
-            older_children = mean(older_children, na.rm = T), 
-            household = mean(household, na.rm = T))%>%
-  pivot_longer(names_to = "predictor", values_to = "value", cols = c(screen, touchscreen, older_children, household))
-
-demographics
-
-
-```
-
-```{r touchscreen}
-touchscreen_model <- ps %>% 
-  filter(parameter == "touchscreen") %>%
-  ggplot(., aes(x = est, y = fct_rev(community))) +
-  geom_vline(xintercept = 0, lty = "solid", color = "black", size = 0.5) +
-  geom_point(size = 0.5, alpha = .5) +
-  geom_density_ridges(col = "white", alpha = .5, rel_min_height = 0.01, fill="#29485D") +
-  scale_x_continuous(limits = c(-1, 0.5), breaks = seq(-1, 0.5, 0.25)) +
-  theme_light() + 
-  labs(x = "Posterior estimate", y = "")
-
-touchscreen_model
-
-ggsave("../figures/touchscreen_model.png", width = 5, height = 5, scale = 0.9, bg = "white")
-
-touchscreen_descr <- demographics %>% 
-  filter(predictor == "touchscreen") %>%
-  ggplot(aes(x = predictor, y = fct_rev(community), fill = value)) +
-  geom_point(pch = 22, size = 5, stroke = 0) +
-  scale_fill_viridis_c() +
-  labs(x = "", y = "", fill = "Proportion") +
-  theme(axis.line = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
+    mean = mean(imprecision, na.rm = TRUE),
+    sd = sd(imprecision, na.rm = TRUE),
+    var = var(imprecision, na.rm =TRUE),
   )
 
-touchscreen_descr
+within_person
+saveRDS(within_person, "../saves/within_person.rds")
 
-ggsave("../figures/touchscreen_descr.png", width = 3.5, height = 5, scale = 0.9, bg = "white")
-```
+# proportion of between-community variance relative to the sum of within-community and between-community variance
+# generally: ICC = (variance of interest) / (total variance) = (variance of interest) / (variance of interest + unwanted variance)
+var_df <- data %>%
+  group_by(subjid, community) %>%
+  summarise(
+    person_mean = mean(imprecision, na.rm = TRUE),
+  ) %>% 
+  group_by(community) %>%
+  summarise(
+    community_mean = mean(person_mean),
+    community_sd = sd(person_mean),
+    within_community_var = var(person_mean)
+  ) %>% 
+  mutate(
+    between_community_var= var(community_mean),
+    total_var = between_community_var + sum(within_community_var),
+    ICC_b= between_community_var / total_var, 
+    ICC_w = sum(within_community_var) / total_var
+  ) %>% 
+  mutate(across(where(is.numeric), ~round(., 2)))
 
-
-
-```{r household}
-household_model <- ps %>% 
-  filter(parameter == "household") %>%
-  ggplot(., aes(x = est, y = fct_rev(community))) +
-  geom_vline(xintercept = 0, lty = "solid", color = "black", size = 0.5) +
-  geom_point(size = 0.5, alpha = .5) +
-  geom_density_ridges(col = "white", alpha = .5, rel_min_height = 0.01, fill="#29485D") +
-  scale_x_continuous(limits = c(-0.25, 0.25), breaks = seq(-0.25, 0.25, 0.125)) +
-  theme_light() + 
-  labs(x = "Posterior estimate", y = "")
-
-household_model
-
-ggsave("../figures/household_model.png", width = 5, height = 5, scale = 0.9, bg = "white")
-
-household_descr <- demographics %>% 
-  filter(predictor == "household") %>%
-  ggplot(aes(x = predictor, y = fct_rev(community), fill = value)) +
-  geom_point(pch = 22, size = 5, stroke = 0) +
-  scale_fill_viridis_c() +
-  labs(x = "", y = "", fill = "# Members") +
-  theme(axis.line = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
-  )
-
-household_descr
-
-ggsave("../figures/household_descr.png", width = 3.5, height = 5, scale = 0.9, bg = "white")
-```
-
-# Gaze model U
-
-```{r u_plot}
-clicks_bin <- data %>%
-  mutate(targetposition = factor(targetposition, levels = c(1:10))) %>%
-  group_by(community, targetposition) %>%
-  tidyboot_mean(column = imprecision)
-
-clicks_bin %>% 
-  ggplot(aes(x = targetposition, y = mean, col = community)) +
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), pch = 20, alpha = 1, position = position_dodge(width = .5)) +
-  labs(x = "Target position (binned)", y = "Average absolute imprecision in target width", col = "") +
-  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
-  scale_color_manual(values = custom_palette) +
-  scale_fill_manual(values = custom_palette)
-
-ggsave("../figures/target_position.png", width = 8, height = 4, scale = 1.1)
+var_df
+saveRDS(var_df, "../saves/var_df.rds")
 ```
 
 # Internal Consistency
 ## Odd-even
 
 ```{r odd_even_plot}
-odd_even <- data %>%
+int_con <- data %>%
   mutate(half = ifelse(trialnr %% 2 == 0, "half_1", "half_2")) %>%
   group_by(subjid, community, half) %>%
   summarise(mean_imprecision = mean(imprecision)) %>%
   pivot_wider(names_from = half, values_from = mean_imprecision) %>%
   group_by(community) %>%
-  summarise(reli = cor(half_1, half_2)) %>%
-  ggplot(aes(x = reli, y = fct_rev(community))) +
-  geom_vline(xintercept = 0, lty = 3, alpha = .75) +
-  geom_point(alpha = .5) +
-  scale_x_continuous(limits = c(-0.5, 1), breaks = c(-0.5, 0, 0.5, 0.6,0.7, 0.8, 0.9, 1)) +
-  labs(x = "Simple odd-even split", y = "") +
-  theme_light() +
-  theme(axis.title.x = element_text(size = 10))
+  summarise(odd_even = cor(half_1, half_2))
 
-odd_even
+odd_even_plot <- int_con %>% 
+  left_join(data %>% group_by(community) %>% summarise(n= n_distinct(subjid))) %>% 
+  ggplot(aes(x = odd_even, y = fct_rev(community))) + 
+  geom_point(aes(size = n), col = "#29485D", alpha = 1) + 
+  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  scale_size(limits = c(20, 160), breaks = seq(25, 150, 50)) + 
+  labs(y = "", x = "Odd-even split") +
+  theme(
+    legend.position = c(0.2, 0.2),
+    strip.text = element_text(face = "bold", size = 10), 
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 8), 
+    legend.box.background = element_rect(), 
+    legend.key.height = unit(0.4, "cm"),
+    legend.key.width = unit(-1.2, "cm"),
+  ) +
+  expand_limits(y = c(1, 18.5))
+
+odd_even_plot
 ```
-
 
 ## Stratified by target position (categorical target centrality)
 
@@ -497,14 +343,14 @@ odd_even
 #   return(mean(abs(ds$clickdistfromtargetcenterx), na.rm = TRUE))
 # }
 # 
-# rel <- tibble()
+# strat <- tibble()
 # 
 # communities <- unique(data$community)
 # 
 # for (j in c(1:50)) {
 #   for (i in communities) {
 #     # stratified by target position
-#     rel_s <- by_split(
+#     strat_s <- by_split(
 #       data = data %>% filter(community == i),
 #       participants = data %>% filter(community == i) %>% pull(subjid),
 #       fn_score = fn_mean,
@@ -516,39 +362,35 @@ odd_even
 #     samp <- tibble(
 #       community = i,
 #       iter = j,
-#       reli = split_coefs(rel_s, cor),
-#       lci = split_ci(rel_s, cor)$lims["0.025","bca"],
-#       uci = split_ci(rel_s, cor)$lims["0.975","bca"]
+#       reli = split_coefs(strat_s, cor),
+#       lci = split_ci(strat_s, cor)$lims["0.025","bca"],
+#       uci = split_ci(strat_s, cor)$lims["0.975","bca"]
 #       )
 #     
 #     print(i)
 #     print(j)
-#     print(rel_s)
+#     print(strat_s)
 #     print(samp)
 #     
-#     rel <- bind_rows(rel, samp)
+#     strat <- bind_rows(strat, samp)
 #   }
 # }
 
-# saveRDS(rel, "../saves/stratified_internal_consistency.rds")
+# saveRDS(strat, "../saves/stratified_internal_consistency.rds")
 
-rel <- readRDS("../saves/stratified_internal_consistency.rds")
+strat <- readRDS("../saves/stratified_internal_consistency.rds")
 ```
 
 ```{r stratified_plot}
-stratified_plot <- rel %>%   
+stratified_plot <- strat %>%   
   ggplot(., aes(x = reli, y = fct_rev(community))) +
-  geom_vline(xintercept = 0, lty = 3, alpha = .75) +
-  geom_point(alpha = .5) +
-  geom_density_ridges(col = "white", alpha = .5, rel_min_height = 0.01, fill="#29485D") +
-  scale_x_continuous(limits = c(-0.5, 1), breaks = c(-0.5, 0, 0.5, 0.6,0.7, 0.8, 0.9, 1)) +
-  theme_light() +
+  geom_density_ridges(col = "white", alpha = 1, rel_min_height = 0.01, fill="#29485D") +
+  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   labs(y = "", x = "Stratified by target centrality") +
-  theme(axis.title.x = element_text(size = 10))
+  theme(axis.title.x = element_text(size = 10)) +
+  expand_limits(y = c(1, 18.5))
 
 stratified_plot
-
-ggsave("../figures/splithalf_stratified.png", width = 8, height = 5, scale = 1, bg = "white")
 ```
 
 ## Stratified and age-corrected
@@ -571,7 +413,7 @@ ggsave("../figures/splithalf_stratified.png", width = 8, height = 5, scale = 1, 
 #     mutate(impr = abs(clickdistfromtargetcenterx), half = "half_2")) %>%
 #   mutate(age = scale(ageinyears))
 # 
-# reli_age <- brm(impr ~ age + (0 + half | subjid),
+# strat_age_model <- brm(impr ~ age + (0 + half | subjid),
 #                 data   = sdata,
 #                 family = lognormal(),
 #                 warmup = 1000,
@@ -583,7 +425,7 @@ ggsave("../figures/splithalf_stratified.png", width = 8, height = 5, scale = 1, 
 # # loop over communities
 # communities <- unique(data$community)
 # 
-# model_cor <- tibble()
+# strat_age <- tibble()
 # 
 # for (j in c(1:50)) {
 #   for (i in communities) {
@@ -603,7 +445,7 @@ ggsave("../figures/splithalf_stratified.png", width = 8, height = 5, scale = 1, 
 #         mutate(impr = abs(clickdistfromtargetcenterx), half = "half_2")) %>%
 #       mutate(age = scale(ageinyears))
 #     
-#     com_mod <- update(reli_age,
+#     com_mod <- update(strat_split_model,
 #         newdata = com_sdata,
 #         warmup = 1000,
 #         iter   = 3000,
@@ -616,40 +458,82 @@ ggsave("../figures/splithalf_stratified.png", width = 8, height = 5, scale = 1, 
 #       filter(parameter == "cor(halfhalf_1, halfhalf_2)") %>%
 #       mutate(community = i, iter = j)
 #     
-#     model_cor <- bind_rows(model_cor, cor)
+#     strat_age <- bind_rows(strat_age, cor)
 #   }
 # }
 # 
-# saveRDS(model_cor, "../saves/age_corrected_internal_consistency.rds")
+# saveRDS(strat_age, "../saves/age_corrected_internal_consistency.rds")
 
-model_cor <- readRDS("../saves/age_corrected_internal_consistency.rds")
+strat_age <- readRDS("../saves/age_corrected_internal_consistency.rds")
 ```
 
 ```{r stratified_agecorrected_plot}
-stratified_agecorrected_plot <- model_cor %>% 
+stratified_agecorrected_plot <- strat_age %>% 
   ggplot(., aes(x = Estimate, y = fct_rev(community))) +
-  geom_vline(xintercept = 0, lty = 3, alpha = .75) +
-  geom_point(alpha = .5) +
-  geom_density_ridges(col = "white", alpha = .5, rel_min_height = 0.01, fill="#29485D") +
-  scale_x_continuous(limits = c(-0.5, 1), breaks = c(-0.5, 0, 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
-  theme_light() +
-  labs(y = "", x = "Stratified by target centrality, model-based age correction") +
-  theme(axis.title.x = element_text(size = 10))
+  geom_density_ridges(col = "white", alpha = 1, rel_min_height = 0.01, fill="#29485D") +
+  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  labs(y = "", x = "Stratified & age-corrected") +
+  theme(axis.title.x = element_text(size = 10)) +
+  expand_limits(y = c(1, 18.5))
 
 stratified_agecorrected_plot
-
-ggsave("../figures/splithalf_stratified_agecorrected.png", width = 8, height = 5, scale = 1, bg = "white")
 ```
 
-```{r consistency_plots}
-ggarrange(
-  odd_even,
+```{r combine_data}
+int_con <- full_join(
+  int_con, 
+  strat %>% 
+    group_by(community) %>%
+    summarise(stratified = mean(reli, na.rm = T))
+) %>% 
+  full_join(
+    strat_age %>% 
+      group_by(community) %>%
+      summarise(stratified_agecorrected = mean(Estimate, na.rm = T))
+  )
+
+int_con
+saveRDS(int_con, "../saves/internal_consistency.rds")
+```
+
+# Combine plots
+
+```{r combine_plot}
+top_row <- ggarrange(
+  density_plot,
+  odd_even_plot,
   stratified_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
   stratified_agecorrected_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
-  widths = c(2, 1.5, 1.5), 
+  widths = c(1.5, 2.1, 1.4, 1.4), 
   nrow = 1,
-  labels = "AUTO" 
+  labels = c("B", "C", "D", "E") 
 )
 
-ggsave("../figures/splithalf.png", width = 14, height = 5, scale = 0.9, bg = "white")
+ggarrange(
+  training_trials_plot,
+  top_row,
+  nrow = 2,
+  heights = c(2.2, 1.4),
+  labels = c("A", "") 
+)
+
+ggsave("../figures/tango-cc.png", width = 12, height = 8, scale = 1, bg = "white")
 ```
+
+# Exploratory: Correlation SD and internal consistency
+
+```{r sd_int_plot}
+sd_int_plot <- var_df %>%  
+  select(community, community_sd) %>% 
+  full_join(int_con) %>% 
+  ggplot(aes(x = community_sd, y = stratified_agecorrected)) +
+  geom_point(shape = 4, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, col = "#29485D") +
+  stat_cor(aes(label = paste(..r.label..)), method = "pearson", size = 4, r.accuracy = 0.01, cor.coef.name = "r", label.x = 0.25, label.y = 0.95) +
+  scale_x_continuous(limits = c(0.25, 2), breaks = seq(0, 2, 0.5)) +
+  scale_y_continuous(limits = c(0.25, 1), breaks = seq(0, 1, 0.2)) +
+  labs(x = "Community SD", y = "Internal consistency")
+
+sd_int_plot
+```
+
