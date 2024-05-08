@@ -15,14 +15,9 @@ library(tidybayes) # for stat_halfeye, add_predictive_draws
 library(tidyboot) # for bootstrapped CIs
 library(brms) # modeling
 library(cmdstanr) # modeling
-library(janitor) # clean_names
 library(ggpubr) # ggarrange
 library(splithalfr) # split half reliability
 library(ggridges) # for ridge plot
-library(RColorBrewer) # for color palette
-library(pals) # for color palette
-library(Hmisc) # for kelly color palette
-library(ggrepel) # for geom_text_repel
 # load source code for geom_flat_violin()
 source("https://gist.githubusercontent.com/benmarwick/2a1bb0133ff568cbe28d/raw/fb53bd97121f7f9ce947837ef1a4c65a73bffb3f/geom_flat_violin.R")
 
@@ -31,19 +26,6 @@ theme_set(theme_light()) # set theme
 
 # Seed for random number generation
 set.seed(42)
-
-# color palette
-# qual_col_pals = brewer.pal.info[brewer.pal.info$colorblind == TRUE,]
-# col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
-# 
-# # kelly palette of 22 colors maximize the contrast between colors in a set if the colors are chosen in sequential order. Kelly paid attention to the needs of people with color blindness
-# colors=kelly(n=n_distinct(data$community) +1)
-
-# create a custom color pallette with 17 easily distinguishable, different colors
-custom_palette <- c(
-  brewer.pal(11, "RdYlGn"),
-  brewer.pal(6, "BuPu")
-)
 ```
 
 ```{r load_data}
@@ -87,68 +69,26 @@ all_trials <- complete_data %>%
 data <- all_trials %>%
   filter(trialtype == "test", voiceover == F) %>%
   mutate(trialnr = as.numeric(factor(trialnr))) 
-
-# dataset with test trials only, with mean imprecision per participant
-# scale age across communities; mean_imprecision per subjid; household, touchscreen scaled per community
-mdata <- data %>%
-  mutate(age = scale(ageinyears, center = T, scale = F)) %>%
-  group_by(subjid, community, age_group, ageinyears, age, household, touchscreen) %>%
-  summarise(mean_imprecision = mean(imprecision)) %>%
-  group_by(community) %>%
-  mutate(
-    household = scale(household), 
-    touchscreen = factor(touchscreen),
-  ) %>%
-  na.omit()
 ```
 
 # Sample 
 
 ```{r sample}
-range(all_trials$ageinyears)
-
-# full sample
+# full sample, check for less than 4 test trials
 all_trials %>%
   group_by(subjid) %>%
   summarise(n= n()) %>%
   arrange(n)
 
-all_trials %>%
-  group_by(community, age_group) %>%
-  summarise(n= n_distinct(subjid))
-
-all_trials %>%
-  group_by(community) %>%
-  summarise(n= n_distinct(subjid))
-
-all_trials %>%
-  summarise(n= n_distinct(subjid))
-
-# model data
-mdata %>%
-  group_by(community, age_group) %>%
-  summarise(n= n_distinct(subjid))
-
-mdata %>%
-  group_by(community) %>%
-  summarise(n= n_distinct(subjid))
-
-mdata %>% ungroup() %>% 
-  summarise(n= n_distinct(subjid))
-```
-
-```{r exclude_children}
-# children who did not finish all trials are removed (only 5 children total)
+# exclude children with less than 4 test trials (1 training 1, 2 training 2, 1 test with audio instructions + 4 test trials = 8 min)
 exclude <- all_trials %>%
-  filter(trialtype == "test", voiceover == F) %>%
   group_by(subjid) %>%
-  summarise(n= n()) %>%
-  filter(n < 15) %>%
+  summarise(n = n()) %>%
+  filter(n < 8) %>%
   pull(subjid)
 
 all_trials <- all_trials %>% filter(!subjid %in% exclude)
 data <- data %>% filter(!subjid %in% exclude)
-mdata <- mdata %>% filter(!subjid %in% exclude)
 ```
 
 ```{r samplesize_table}
@@ -172,65 +112,62 @@ sample_table <- data %>%
 saveRDS(sample_table, "../saves/sample_table.rds")
 ```
 
-```{r samplesize_plot}
-data %>% 
-  summarise(click = mean(imprecision), .by = c(community, ageinyears)) %>%
-  ggplot(mapping = aes(x = community, y = ageinyears)) + 
-  geom_flat_violin(scale = "count", trim = T, fill = "#29485D", alpha = 0.75) + 
-  geom_dotplot(binaxis = "y",
-               dotsize = 1,
-               stackdir = "down",
-               binwidth = 0.1,
-               position = position_nudge(-0.025), 
-               fill = "#ffffff"
-               ) +
-  scale_y_continuous(limits = c(2, 11), breaks = seq(2, 11, 1)) + 
-  labs(x = "", y = "Age in years") + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1)) 
-
-ggsave("../figures/age_distribution.png", width = 10, height = 5, scale = 1.1)
-```
-
 # Variation
 
-```{r model_density}
-# age_model <- brm(mean_imprecision ~ age + (1 | subjid),
-#                 data   = mdata,
-#                 family = lognormal(),
-#                 warmup = 2000,
-#                 iter   = 6000,
-#                 control = list(adapt_delta = 0.95),
-#                 chains = 4,
-#                 cores  = 4)
+```{r trialtypes_model}
+mdata <- all_trials %>% 
+  summarise(
+    imprecision = mean(imprecision), 
+    .by = c(trialtype, subjid, community)
+  ) %>% 
+  mutate(
+    trialtype = recode(trialtype, touch = "Training 1", fam = "Training 2", test = "Test") %>% as_factor(.) %>% relevel("Test"),
+    community = as.factor(community),
+  )
 
-# saveRDS(age_model, "../saves/age_model.rds")
+mtrialtypes <- brm(imprecision ~ trialtype + (trialtype | community),
+                    data = mdata,
+                    family = lognormal(),
+                    warmup = 1000, 
+                    iter   = 3000, 
+                    chains = 4, 
+                    inits  = "random",
+                    cores  = 4) %>%
+  add_criterion(c("loo","waic"))
 
-age_model <- readRDS("../saves/age_model.rds")
+summary(mtrialtypes)
 
-nd <- mdata %>% 
-  select(-c(mean_imprecision))
-  
-# extract model predictions for mock data
-pred_agecorrected <- fitted(age_model, newdata = nd, re_formula = NA) %>% as_tibble() %>% bind_cols(mdata)
+# ranef(mtrialtypes)
+mestimates <- coef(mtrialtypes)
 
-density_plot <- pred_agecorrected %>% 
-  ggplot(aes(x = Estimate, y = fct_rev(community))) +
-  geom_density_ridges(
-    jittered_points = TRUE,
-    position = position_points_jitter(width = 0.05, height = 0),
-    point_shape = '|', point_size = 2, point_alpha = 1, point_color = "#ffffff",
-    alpha = 1,
-    fill = "#29485D", 
-    col = "#ffffff", 
-    scale = 1.5
-  ) +
-  labs(x = "Absolute imprecision in target width", y = "", fill = "Community") +
-  expand_limits(y = c(1, 18.5)) + 
-  scale_x_continuous(limits = c(0.5, 4), breaks = seq(0, 4, 0.5)) +
-  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+trialtypes_est <- tibble(
+  community = rownames(mestimates$community[,,1]),
+  Intercept = mestimates$community[, , "Intercept"][1:17],
+  Training1 = mestimates$community[, , "trialtypeTraining1"][1:17],
+  Training2 = mestimates$community[, , "trialtypeTraining2"][1:17]
+)
 
-density_plot
-saveRDS(density_plot, "../saves/density_plot.rds")
+saveRDS(mtrialtypes, "../saves/mtrialtypes.rds")
+saveRDS(trialtypes_est, "../saves/trialtypes_est")
+```
+
+```{r model_draws}
+# newdata <- mdata %>% 
+#   select(-imprecision)
+# 
+# post <- fitted(mtrialtypes, newdata = newdata, re_formula = ~ (trialtype | community)) %>%
+#   as_tibble() %>%
+#   bind_cols(newdata)
+# 
+# post_sum <- post %>% 
+#   summarise(
+#     estimate = mean(Estimate), 
+#     .by = c(community, trialtype)
+#   ) %>% 
+#   pivot_wider(names_from = trialtype, values_from = estimate)
+# 
+# min(post_sum$`Training 1`)
+# min(post_sum$`Training 2`)
 ```
 
 ```{r training_trials}
@@ -238,6 +175,17 @@ saveRDS(density_plot, "../saves/density_plot.rds")
 delete_no_display <- function(v) {
   if_else(str_detect(v, 'no_display'), '', v)
 }
+
+descr_trialtypes <- all_trials %>% 
+  mutate(trialtype = recode(trialtype, touch = "Training 1", fam = "Training 2", test = "Test") %>% as_factor(.)) %>%
+  na.omit() %>%
+  summarise(
+    mean_click = mean(imprecision), 
+    sd_click = sd(imprecision), 
+    .by = trialtype
+  )
+
+saveRDS(descr_trialtypes, "../saves/descr_trialtypes.rds")
 
 training_trials_plot <- all_trials %>% 
   mutate(trialtype = recode(trialtype, touch = "Training 1", fam = "Training 2", test = "Test") %>% as_factor(.)) %>%
@@ -249,10 +197,11 @@ training_trials_plot <- all_trials %>%
                               as.character(trialtype),
                               paste0(as.character(trialtype), 'no_display')) %>% as_factor(.) %>% fct_relevel(., "Training 1", "Training 2", "Test")
   ) %>%
-  ggplot(aes(x = trialtype, y = mean_click, col = ageinyears)) +
-  geom_jitter(width = 0.2, size = 0.7, alpha = 0.7) +
+  ggplot(aes(x = as.factor(trialtype), y = mean_click)) +
+  geom_jitter(aes(col = ageinyears), height = 0, width = 0.2, size = 1, alpha = 1) + 
+  geom_violin(alpha = 0.25, fill = "darkgrey", scale = "width", draw_quantiles = c(0.5)) +
   scale_color_viridis_c(direction = -1) +
-  scale_y_continuous(limits = c(0, 7), breaks = seq(0, 7, 1)) +
+  scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, 2)) +
   facet_wrap(~ community, nrow = 3, scales="free_x") +
   theme(
     axis.text.x = element_text(angle = 30, hjust = 1), 
@@ -343,46 +292,44 @@ saveRDS(odd_even_plot, "../saves/odd_even_plot.rds")
 ## Stratified by target position (categorical target centrality)
 
 ```{r stratified_data}
-# fn_mean <- function(ds) {
-#   return(mean(abs(ds$clickdistfromtargetcenterx), na.rm = TRUE))
-# }
-# 
-# strat <- tibble()
-# 
-# communities <- unique(data$community)
-# 
-# for (j in c(1:50)) {
-#   for (i in communities) {
-#     # stratified by target position
-#     strat_s <- by_split(
-#       data = data %>% filter(community == i),
-#       participants = data %>% filter(community == i) %>% pull(subjid),
-#       fn_score = fn_mean,
-#       verbose = F,
-#       stratification = paste(data %>% filter(community == i) %>% pull(centrality)),
-#       careful = FALSE
-#       )
-#     
-#     samp <- tibble(
-#       community = i,
-#       iter = j,
-#       reli = split_coefs(strat_s, cor),
-#       lci = split_ci(strat_s, cor)$lims["0.025","bca"],
-#       uci = split_ci(strat_s, cor)$lims["0.975","bca"]
-#       )
-#     
-#     print(i)
-#     print(j)
-#     print(strat_s)
-#     print(samp)
-#     
-#     strat <- bind_rows(strat, samp)
-#   }
-# }
+fn_mean <- function(ds) {
+  return(mean(abs(ds$clickdistfromtargetcenterx), na.rm = TRUE))
+}
 
-# saveRDS(strat, "../saves/stratified_internal_consistency.rds")
+strat <- tibble()
 
-strat <- readRDS("../saves/stratified_internal_consistency.rds")
+communities <- unique(data$community)
+for (j in c(1:50)) {
+  for (i in communities) {
+    # stratified by target position
+    strat_s <- by_split(
+      data = data %>% filter(community == i),
+      participants = data %>% filter(community == i) %>% pull(subjid),
+      fn_score = fn_mean,
+      verbose = F,
+      stratification = paste(data %>% filter(community == i) %>% pull(centrality)),
+      careful = FALSE
+      )
+
+    samp <- tibble(
+      community = i,
+      iter = j,
+      reli = split_coefs(strat_s, cor),
+      lci = split_ci(strat_s, cor)$lims["0.025","bca"],
+      uci = split_ci(strat_s, cor)$lims["0.975","bca"]
+      )
+
+    print(i)
+    print(j)
+    print(strat_s)
+    print(samp)
+
+    strat <- bind_rows(strat, samp)
+  }
+}
+
+saveRDS(strat, "../saves/stratified_internal_consistency.rds")
+# strat <- readRDS("../saves/stratified_internal_consistency.rds")
 ```
 
 ```{r stratified_plot}
@@ -403,73 +350,73 @@ saveRDS(stratified_plot, "../saves/stratified_plot.rds")
 ```{r stratified_agecorrected_data}
 # estimate age-corrected reliability
 # run model first for one community to use update()
-# split <- split_df(
-#   data = data %>% filter(community == "Leipzig (Germany)"),
-#   stratification = data %>% filter(community == "Leipzig (Germany)") %>% pull(centrality),
-#   careful = FALSE
-# )
-# 
-# sdata <- bind_rows(
-#   split[[1]] %>% 
-#     select(subjid, ageinyears, clickdistfromtargetcenterx) %>% 
-#     mutate(impr = abs(clickdistfromtargetcenterx), half = "half_1"),
-#   split[[2]] %>% 
-#     select(subjid, ageinyears, clickdistfromtargetcenterx) %>%
-#     mutate(impr = abs(clickdistfromtargetcenterx), half = "half_2")) %>%
-#   mutate(age = scale(ageinyears))
-# 
-# strat_age_model <- brm(impr ~ age + (0 + half | subjid),
-#                 data   = sdata,
-#                 family = lognormal(),
-#                 warmup = 1000,
-#                 iter   = 3000,
-#                 control = list(adapt_delta = 0.95),
-#                 chains = 4,
-#                 cores  = 4)
-# 
-# # loop over communities
-# communities <- unique(data$community)
-# 
-# strat_age <- tibble()
-# 
-# for (j in c(1:50)) {
-#   for (i in communities) {
-#     
-#     com_split <- split_df(
-#       data = data %>% filter(community == i),
-#       stratification = data %>% filter(community == i) %>% pull(centrality),
-#       careful = FALSE
-#     )
-#     
-#     com_sdata <- bind_rows(
-#       com_split[[1]] %>% 
-#         select(subjid, ageinyears, clickdistfromtargetcenterx) %>%
-#         mutate(impr = abs(clickdistfromtargetcenterx), half = "half_1"),
-#       com_split[[2]] %>%
-#         select(subjid, ageinyears, clickdistfromtargetcenterx) %>%
-#         mutate(impr = abs(clickdistfromtargetcenterx), half = "half_2")) %>%
-#       mutate(age = scale(ageinyears))
-#     
-#     com_mod <- update(strat_split_model,
-#         newdata = com_sdata,
-#         warmup = 1000,
-#         iter   = 3000,
-#         control = list(adapt_delta = 0.95),
-#         chains = 4,
-#         cores  = 4)
-#     
-#     cor <- summary(com_mod)$random$subjid %>%
-#       as_tibble(rownames = "parameter") %>%
-#       filter(parameter == "cor(halfhalf_1, halfhalf_2)") %>%
-#       mutate(community = i, iter = j)
-#     
-#     strat_age <- bind_rows(strat_age, cor)
-#   }
-# }
-# 
-# saveRDS(strat_age, "../saves/age_corrected_internal_consistency.rds")
+split <- split_df(
+  data = data %>% filter(community == "Leipzig (Germany)"),
+  stratification = data %>% filter(community == "Leipzig (Germany)") %>% pull(centrality),
+  careful = FALSE
+)
 
-strat_age <- readRDS("../saves/age_corrected_internal_consistency.rds")
+sdata <- bind_rows(
+  split[[1]] %>%
+    select(subjid, ageinyears, clickdistfromtargetcenterx) %>%
+    mutate(impr = abs(clickdistfromtargetcenterx), half = "half_1"),
+  split[[2]] %>%
+    select(subjid, ageinyears, clickdistfromtargetcenterx) %>%
+    mutate(impr = abs(clickdistfromtargetcenterx), half = "half_2")) %>%
+  mutate(age = scale(ageinyears))
+
+strat_age_model <- brm(impr ~ age + (0 + half | subjid),
+                data   = sdata,
+                family = lognormal(),
+                warmup = 1000,
+                iter   = 3000,
+                control = list(adapt_delta = 0.95),
+                chains = 4,
+                cores  = 4)
+
+# loop over communities
+communities <- unique(data$community)
+
+strat_age <- tibble()
+
+for (j in c(1:50)) {
+  for (i in communities) {
+
+    com_split <- split_df(
+      data = data %>% filter(community == i),
+      stratification = data %>% filter(community == i) %>% pull(centrality),
+      careful = FALSE
+    )
+
+    com_sdata <- bind_rows(
+      com_split[[1]] %>%
+        select(subjid, ageinyears, clickdistfromtargetcenterx) %>%
+        mutate(impr = abs(clickdistfromtargetcenterx), half = "half_1"),
+      com_split[[2]] %>%
+        select(subjid, ageinyears, clickdistfromtargetcenterx) %>%
+        mutate(impr = abs(clickdistfromtargetcenterx), half = "half_2")) %>%
+      mutate(age = scale(ageinyears))
+
+    com_mod <- update(strat_split_model,
+        newdata = com_sdata,
+        warmup = 1000,
+        iter   = 3000,
+        control = list(adapt_delta = 0.95),
+        chains = 4,
+        cores  = 4)
+
+    cor <- summary(com_mod)$random$subjid %>%
+      as_tibble(rownames = "parameter") %>%
+      filter(parameter == "cor(halfhalf_1, halfhalf_2)") %>%
+      mutate(community = i, iter = j)
+
+    strat_age <- bind_rows(strat_age, cor)
+  }
+}
+
+saveRDS(strat_age, "../saves/age_corrected_internal_consistency.rds")
+
+# strat_age <- readRDS("../saves/age_corrected_internal_consistency.rds")
 ```
 
 ```{r stratified_agecorrected_plot}
@@ -496,7 +443,8 @@ int_con <- full_join(
     strat_age %>% 
       group_by(community) %>%
       summarise(stratified_agecorrected = mean(Estimate, na.rm = T))
-  )
+  ) %>%
+  mutate(across(where(is.numeric), ~round(., 2)))
 
 int_con
 saveRDS(int_con, "../saves/internal_consistency.rds")
@@ -505,18 +453,16 @@ saveRDS(int_con, "../saves/internal_consistency.rds")
 # Combine plots
 
 ```{r combine_plot}
-# density_plot <- readRDS("../saves/density_plot.rds")
 # odd_even_plot <- readRDS("../saves/odd_even_plot.rds")
 # stratified_plot <- readRDS("../saves/stratified_plot.rds")
 # stratified_agecorrected_plot <- readRDS("../saves/stratified_agecorrected_plot.rds")
 # training_trials_plot <- readRDS("../saves/training_trials_plot.rds")
 
 top_row <- ggarrange(
-  density_plot,
   odd_even_plot,
   stratified_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
   stratified_agecorrected_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
-  widths = c(1.5, 2.1, 1.4, 1.4), 
+  widths = c(1.7, 1.2, 1.2), 
   nrow = 1,
   labels = c("B", "C", "", "") 
 )
@@ -525,16 +471,19 @@ ggarrange(
   training_trials_plot,
   top_row,
   nrow = 2,
-  heights = c(2.9, 1.4),
+  heights = c(3, 1.5),
   labels = c("A", "") 
 )
 
-ggsave("../figures/tango-cc-results.png", width = 12, height = 12, scale = 1, bg = "white")
+ggsave("../figures/tango-cc-results.png", width = 12, height = 11, scale = 0.9, bg = "white")
 ```
 
 # Exploratory: Correlation SD and internal consistency
 
 ```{r sd_int_plot}
+# var_df <- readRDS("../saves/var_df.rds")
+# int_con <- readRDS("../saves/internal_consistency.rds")
+
 sd_int_plot <- var_df %>%  
   select(community, community_sd) %>% 
   full_join(int_con) %>% 
@@ -547,5 +496,14 @@ sd_int_plot <- var_df %>%
   labs(x = "Community SD", y = "Internal consistency")
 
 sd_int_plot
+
+sd_int_cor <- var_df %>%  
+  select(community, community_sd) %>% 
+  full_join(int_con) %>% 
+  select(c(community_sd, stratified_agecorrected)) %>%
+  corr.test()
+
+sd_int_cor$ci %>% round(2) %>% 
+  saveRDS("../saves/sd_int_cor.rds")
 ```
 
