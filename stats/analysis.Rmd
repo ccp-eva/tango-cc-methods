@@ -14,7 +14,7 @@ library(tidyverse) # data handling etc.
 library(tidybayes) # for stat_halfeye, add_predictive_draws
 library(tidyboot) # for bootstrapped CIs
 library(brms) # modeling
-library(cmdstanr) # modeling
+# library(cmdstanr) # modeling
 library(ggpubr) # ggarrange
 library(splithalfr) # split half reliability
 library(ggridges) # for ridge plot
@@ -143,11 +143,20 @@ mestimates <- coef(mtrialtypes)
 trialtypes_est <- tibble(
   community = rownames(mestimates$community[,,1]),
   Intercept = mestimates$community[, , "Intercept"][1:17],
+  Intercept_q25 = mestimates$community[, , "Intercept"][35:51],
+  Intercept_q975 = mestimates$community[, , "Intercept"][52:68],
   Training1 = mestimates$community[, , "trialtypeTraining1"][1:17],
-  Training2 = mestimates$community[, , "trialtypeTraining2"][1:17]
-)
+  Training1_q25 = mestimates$community[, , "trialtypeTraining1"][35:51],
+  Training1_q975 = mestimates$community[, , "trialtypeTraining1"][52:68],
+  Training2 = mestimates$community[, , "trialtypeTraining2"][1:17],
+  Training2_q25 = mestimates$community[, , "trialtypeTraining2"][35:51],
+  Training2_q975 = mestimates$community[, , "trialtypeTraining2"][52:68]
+) %>% 
+  mutate(across(where(is.numeric), ~round(., 2)))
+trialtypes_est
 
 saveRDS(mtrialtypes, "../saves/mtrialtypes.rds")
+# mtrialtypes <- readRDS("../saves/mtrialtypes.rds")
 saveRDS(trialtypes_est, "../saves/trialtypes_est")
 ```
 

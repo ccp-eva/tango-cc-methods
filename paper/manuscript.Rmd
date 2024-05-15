@@ -3,130 +3,149 @@ title: "Measuring variation in gaze following across communities, ages, and indi
 shorttitle: "measuring gaze following across communities"
 
 author: 
-  - name          : "Julia Prein (ORCID: 0000-0002-3154-6167)"
+  - name          : "Julia Christin Prein (ORCID: 0000-0002-3154-6167)"
     affiliation   : "1,2"
     corresponding : yes
     address       : "Universitätsallee 1, 21335 Lüneburg, Germany"
-    email         : "manuel.bohn@leuphana.de"
+    email         : "julia.prein@leuphana.de"
     role:
       - "Conceptualization"
       - "Methodology"
       - "Software"
-      - "Investigation"
+      - "Formal Analysis"
+      - "Resources"
       - "Writing - Original Draft Preparation"
       - "Writing - Review & Editing"
   - name          : "Florian M. Bednarski (ORCID: 0000-0003-4384-4791)"
     affiliation   : "4"
     role:
-      - "Investigation"
+      - "Resources"
       - "Writing - Review & Editing" 
   - name          : "Ardain Dzabatou"
     affiliation   : "5"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Michael C. Frank (ORCID: 0000-0002-7551-4378)"
     affiliation   : "6"
     role:
-      - "Investigation"
-      - "Writing - Review & Editing"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Annette M. E. Henderson (ORCID: 0000-0003-4384-4791)"
     affiliation   : "4"
     role:
-      - "Investigation"
-      - "Writing - Review & Editing"      
+      - "Resources"
+      - "Writing - Review & Editing"     
   - name          : "Josefine Kalbitz"
     affiliation   : "2"
     role:
-      - "Investigation"
-      - "Writing - Review & Editing"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Patricia Kanngiesser (ORCID:0000-0003-1068-3725)"
     affiliation   : "7"
     role:
-      - "Investigation"
+      - "Resources"
       - "Writing - Review & Editing" 
   - name          : "Dilara Keşşafoğlu (ORCID: 0000-0002-7356-0733)"
     affiliation   : "8"
     role:
-      - "Investigation"
+      - "Resources"
       - "Writing - Review & Editing" 
   - name          : "Bahar Köymen (ORCID: 0000-0001-5126-8240)"
     affiliation   : "9"
     role:
-      - "Investigation"
-      - "Writing - Review & Editing"  
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Maira V. Manrique-Hernandez"
     affiliation   : "2"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Shirley Magazi (ORCID: 0009-0006-0479-9800)"
     affiliation   : "10"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Lizbeth Mújica-Manrique"
     affiliation   : "2"
     role:
-      - "Investigation"
+      - "Resources"
       - "Writing - Review & Editing" 
   - name          : "Julia Ohlendorf"
     affiliation   : "2"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Damilola Olaoba"
     affiliation   : "2"
     role:
-     - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Wesley R. Pieters (ORCID:0000-0002-6152-249X)"
     affiliation   : "10"
     role:
-      - "Investigation"
+      - "Resources"
       - "Writing - Review & Editing" 
   - name          : "Sarah Pope-Caldwell"
     affiliation   : "2"
     role:
-     - "Investigation"
-  - name          : "Roman Stengelin (ORCID: 0000-0003-2212-4613)"
-    affiliation   : "2,10"
+      - "Resources"
+      - "Writing - Review & Editing" 
+  - name          : "Umay Sen (ORCID: 0000-0001-9488-0851)"
+    affiliation   : "13"
     role:
-      - "Conceptualization"
-      - "Methodology"
-      - "Investigation"
-      - "Writing - Review & Editing"     
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Katie Slocombe (ORCID: 0000-0002-7310-1887)"
     affiliation   : "11"
     role:
-     - "Investigation"
-     - "Writing - Review & Editing"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Robert Z. Sparks (ORCID: 0000-0001-7545-0522)"
     affiliation   : "6"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
+  - name          : "Roman Stengelin (ORCID: 0000-0003-2212-4613)"
+    affiliation   : "2,10"
+    role:
+      - "Resources"
+      - "Writing - Review & Editing"     
   - name          : "Jahnavi Sunderarajan"
     affiliation   : "2"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
+  - name          : "Kirsten Sutherland"
+    affiliation   : "2"
+    role:
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Florence Tusiime"
     affiliation   : "3"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Wilson Vieira (ORCID: 0009-0001-9400-6328)"
     affiliation   : "2"
     role:
-     - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Zhen Zhang (ORCID: 0000-0001-9300-0920)"
     affiliation   : "12"
     role:
-      - "Investigation"
+      - "Resources"
       - "Writing - Review & Editing"   
   - name          : "Yufei Zong (ORCID: 0009-0000-5012-0244)"
     affiliation   : "12"
     role:
-      - "Investigation"
+      - "Resources"
+      - "Writing - Review & Editing" 
   - name          : "Daniel B. M. Haun (ORCID: 0000-0002-3262-645X)"
     affiliation   : "2,+"
     role:
-      - "Conceptualization"
       - "Funding acquisition"
-      - "Writing - Review & Editing"
+      - "Writing - Review & Editing" 
   - name          : "Manuel Bohn (ORCID: 0000-0001-6006-1348)"
     affiliation   : "1,2,+"
     role:
@@ -159,6 +178,8 @@ affiliation:
     institution   : "Department of Psychology, University of York"
   - id            : "12"
     institution   : "CAS Key Laboratory of Behavioral Science, Institute of Psychology, Chinese Academy of Sciences"
+  - id            : "13"
+    institution   : "Department of Psychology, Developmental Psychology, Uppsala University"
   - id            : "+"
     institution   : "joint last author"
     
@@ -166,13 +187,13 @@ abstract: |
             Cross-cultural studies are crucial for investigating the universality and robustness of cognitive developmental processes. Yet, suitable methods to measure variability in cognition across languages and communities are lacking. This paper describes the TANGO--CC (Task for Assessing Individual Differences in Gaze Understanding -- Cross-Cultural), a gaze following task designed to measure basic social cognition across individuals, ages, and communities. The TANGO--CC was developed and psychometrically assessed in one setting and subsequently adapted for cross-cultural data collection. Minimal language demands and the web-app implementation allow fast and easy contextual adaptations to each community. The TANGO--CC captured individual differences and showed good internal consistency in a data set from 2.5- to 11-year-old children from 17 diverse communities. Within-community variation outweighed between-community variation. We provide an open-source website for researchers to customize and use the task. The TANGO--CC represents a valuable contribution to assessing basic social cognition in diverse communities, establishing a roadmap for researching cross-cultural individual differences.
   
 keywords          : "cross-cultural psychology, social cognition, gaze following, individual differences, reliability"
-wordcount         : "XXX"
+wordcount         : "5457"
 floatsintext      : yes
 figurelist        : no
 tablelist         : no
 footnotelist      : no
 linenumbers       : yes
-mask              : yes 
+mask              : no 
 draft             : no
 classoption       : "man"
 header-includes:
@@ -194,7 +215,7 @@ header-includes:
 
 csl               : "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"
 documentclass     : "apa7"
-output            : papaja::apa6_word
+output            : papaja::apa6_pdf
 editor_options    : 
   markdown: 
     wrap: sentence
@@ -206,7 +227,7 @@ library("tidyverse")
 library("papaja")
 library("kableExtra")
 library("brms")
-library("janitor")
+# library("janitor")
 
 theme_set(theme_classic())
 ```
@@ -219,19 +240,16 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 # Introduction
 
-For decades, researchers have advocated for more diverse samples in psychological research and cautioned against relying solely on participants from Western, Educated, Industrialized, Rich, and Democratic (WEIRD) backgrounds [@henrich2010weirdesta; @lillard1998ethnopsychologies].
+For decades, researchers have advocated for more diverse samples in psychological research and cautioned against relying solely on participants from Western, Educated, Industrialized, Rich, and Democratic (WEIRD) communities [@henrich2010weirdesta; @lillard1998ethnopsychologies].
 Despite numerous calls for change, the subject pools reported in high-impact journals still lack diversity [@nielsen2017persistent; @gutchess2023considerationa].
-This lack of representation hinders progress in theory building: inferences about the unique characteristics of human behavior and "human nature" cannot be drawn from humans from only one community [@krys2024weirda].
+This lack of representation hinders progress in theory building: inferences about the universal and variable aspects of the human cognitive system cannot be drawn from data collected in single communities [@krys2024weirda].
 
-To do justice to the diversity in experiences, we must study cognition and its development in diverse communities and even across families and individuals [@selcuk2023development; @gutchess2023considerationa].
-So why are not more social-cognitive studies focusing on the variation between individuals living in diverse communities?
-A potential reason for the under-representation of these studies may be the scarcity of suitable tasks [@bourdage2023evaluation].
+One reason for the lack of diversity in psychological studies is the scarcity of suitable methods to collect comparable psychological data in different communities [@bourdage2023evaluation]. This shortage of suitable measures is even more prevalent in developmental psychology. In this paper, we describe the construction and psychometric evaluation of a measure of basic social cognition (gaze following) in children as a concrete example for how to overcome this problem. 
 
-Studies investigating variation between communities and/or individuals need to ensure that the captured variation is systematic and not just random noise.
-This requires measurement reliability and validity.
-Yet, social cognition studies based on US-American and European samples rarely report psychometric information [for a review, see @beaudoin2020systematic].
-This picture further deteriorates when we pay attention to the reliability and validity of cross-cultural social cognition tasks [@hajduk2020how; @bourdage2023evaluation; @waschl2022crosscultural].
-It remains challenging to find reliable and valid tasks that can capture individual differences within one community, let alone tasks that do so across different communities.
+Studies investigating variation between communities and/or individuals need to ensure that the captured variation is systematic and not just random noise: measures need to be reliable and valid.
+This, of course, applies to all fields of psychology. Given the topic of this paper, we will focus on measures of social cognition for children. Studies on social cognition based on US-American and European samples rarely report psychometric information [for a review, see @beaudoin2020systematic].
+This picture further deteriorates when we look at cross-cultural social cognition tasks [@hajduk2020how; @bourdage2023evaluation; @waschl2022crosscultural].
+Thus, it is already challenging to find reliable and valid tasks that can capture individual differences within one community, let alone tasks that do so across different communities.
 
 Adapting tasks to diverse communities and re-assessing their validity and reliability might be especially important in the social-cognitive domain.
 If, in theory, stimuli used in social cognition tasks should relate to people's everyday experiences, the tasks need to represent different communities.
@@ -262,7 +280,7 @@ Furthermore, an exploratory analysis showed that children performed equally well
 This suggests that superficial variations in the stimulus design do not influence children's performance in the task.
 
 This paper showcases the TANGO--CC (TANGO -- Cross-Cultural), a standardized gaze following task that can be -- and has been -- adapted to several languages and communities.
-We describe the task's development and provide a tutorial for the open-source website (<https://ccp-odc.eva.mpg.de/TANGO--CC/>).
+We describe the task's development and provide a tutorial for the open-source website (<https://ccp-odc.eva.mpg.de/tango-cc/>).
 We assess its cross-cultural applicability based on data from a large cross-cultural sample of 2.5- to 11-year-olds from 17 different urban/rural communities across the world and discuss the task's psychometrics.
 The task and all its adaptations have been initially designed for a paper by @bohn2024universal, and we re-use the data set in this paper.
 
@@ -271,9 +289,9 @@ The task and all its adaptations have been initially designed for a paper by @bo
 ## Approach
 
 In a perfect world, developing a cross-cultural task would include international collaboration and diverse samples from the beginning, already during study design, piloting and item selection.
-As this seems hardly feasible, we present an alternative, pragmatic approach.
-First, the task was implemented in one context, in our case with a German sample [@prein2023tango].
-In this context, the task's reliability and validity were assessed in detail.
+As this seems hardly feasible, we present a pragmatic approach.
+The TANGO-CC was first implemented in one context, in our case Leipzig, Germany [@prein2023tango].
+Here, the task's reliability and validity were assessed in detail.
 Even though this does not guarantee that the task will be valid and reliable in another context, it substantially increases the likelihood.
 Second, we reassessed the TANGO--CC's measurement quality (i.e., variability and reliability) across diverse communities by analyzing the data from @bohn2024universal, who used the task to collect data in 17 communities.
 Therefore, our procedure maintains a balance between a detailed analysis of the task's psychometric properties and a swift and feasible task adaptation.
@@ -283,7 +301,7 @@ We hope that not just the TANGO--CC but also our pragmatic approach to construct
 In the first step, the task's underlying structure was designed.
 The TANGO--CC measures the precision with which participants locate an agent’s attentional focus.
 The participant's task is to locate a target by following the agent's gaze (see Figure \@ref(fig:fig1)).
-Precision was measured in a continuous way as the distance between the participant's click on the screen and the target position.
+Precision was measured in a continuous way as the distance between the participant’s click on the screen (*i.e.*, where the participant thinks the target is) and the target’s real position.
 The task's core functionality is to animate the agent's eyes so that they follow the target's movement.
 This basic structure was then embedded in the task's superficial appearance (e.g., background scene) and audio instructions.
 Once this structure was implemented, adaptations of the task were greatly simplified.
@@ -335,7 +353,7 @@ If the total number of trials is not divisible by the number of unique elements,
 
 ### Cross-cultural customization
 
-The TANGO--CC can be accessed via the following link: (<https://ccp-odc.eva.mpg.de/TANGO--CC/>).
+The TANGO--CC can be accessed via the following link: (<https://ccp-odc.eva.mpg.de/tango-cc/>).
 In the first step, researchers can select the language for audio instructions, currently available for 13 different languages and even more dialects (see Table 1).
 All written instructions are presented in English because they are not directed to the participant but to the research assistant who guides the participant through the task.
 The task can either be started with the default settings or further customized.
@@ -354,7 +372,7 @@ In the last step, researchers can enter an alphanumeric participant identifier (
 To save the selected settings, researchers can bookmark the URL so that the customized task can be easily accessed, and only the participant ID and choice of webcam recording need to be entered again.
 The task can then be started.
 
-The source code of the task is available on GitHub (<https://github.com/ccp-eva/TANGO--CC>).
+The source code of the task is available on GitHub (<https://github.com/ccp-eva/tango-cc>).
 By directly editing the `HTML` and `JavaScript` code, researchers gain even more flexibility in adjusting the task to their needs.
 
 ```{r langtab}
@@ -471,23 +489,23 @@ trialtypes_est <- readRDS("../saves/trialtypes_est")
 int_con_wo_uk <- int_con %>% filter(community != "Plymouth (UK)") %>% summarise(min = min(stratified_agecorrected))
 ```
 
-As a first feasibility check, we inspected the mean and standard deviations by community and compared performance in each trial type (training 1, training 2, test trials).
-Performance was defined as the absolute click distance between the target center and the click x coordinate, scaled according to balloon widths.
+First, we inspected the mean and standard deviations by community and compared performance in each trial type (training 1, training 2, test trials).
+Performance was defined as the absolute click distance between the target center and the click x coordinate (measured in balloon widths).
 Across communities, children performed best in training 1 (mean = `r descr_trialtypes[descr_trialtypes$trialtype== "Training 1",]$mean_click`, sd = `r descr_trialtypes[descr_trialtypes$trialtype== "Training 1",]$sd_click`), followed by training 2 (mean = `r descr_trialtypes[descr_trialtypes$trialtype== "Training 2",]$mean_click`, sd = `r descr_trialtypes[descr_trialtypes$trialtype== "Training 2",]$sd_click`) and test trials (mean = `r descr_trialtypes[descr_trialtypes$trialtype== "Test",]$mean_click`, sd = `r descr_trialtypes[descr_trialtypes$trialtype== "Test",]$sd_click`; see Figure \@ref(fig:fig2)A).
 
 To formally estimate the effect of trial type on performance in the TANGO--CC, we fit a generalized linear mixed model (GLMM) predicting the task performance by trial type (reference category: test trials).
 All analyses were run in `r R.version$version.string` [@rcoreteam2024language].
-GLMMs were fit with default priors using the function `brm` from the package `brms` [@burkner2017brms; @burkner2018advanced].
+GLMMs were fitted with default priors using the function `brm` from the package `brms` [@burkner2017brms; @burkner2018advanced].
 The model included random effects for trial type by community (model notation in `R: imprecision ~ trialtype + (trialtype | community)`), and imprecision was modeled by a `lognormal` distribution.
 We inspected the posterior distribution (mean and 95% Credible Interval (CrI)) for the trial type estimates.
 
-Our GLMM analysis supported the visual inspection of the data: the estimates for training 1 ($\beta$ = `r fixef(mtrialtypes)["trialtypeTraining1", "Estimate"]`; 95% CrI [`r fixef(mtrialtypes)["trialtypeTraining1", "Q2.5"]`; `r fixef(mtrialtypes)["trialtypeTraining1", "Q97.5"]`]) and training 2 ($\beta$ = `r fixef(mtrialtypes)["trialtypeTraining2", "Estimate"]`; 95% CrI [`r fixef(mtrialtypes)["trialtypeTraining2", "Q2.5"]`; `r fixef(mtrialtypes)["trialtypeTraining2", "Q97.5"]`]) were negative and reliably different from zero.
+Our GLMM analysis supported the visual inspection of the data: the fixed-effect estimates for training 1 ($\beta$ = `r fixef(mtrialtypes)["trialtypeTraining1", "Estimate"]`; 95% CrI [`r fixef(mtrialtypes)["trialtypeTraining1", "Q2.5"]`; `r fixef(mtrialtypes)["trialtypeTraining1", "Q97.5"]`]) and training 2 ($\beta$ = `r fixef(mtrialtypes)["trialtypeTraining2", "Estimate"]`; 95% CrI [`r fixef(mtrialtypes)["trialtypeTraining2", "Q2.5"]`; `r fixef(mtrialtypes)["trialtypeTraining2", "Q97.5"]`]) were negative and reliably different from zero.
 Please note that the TANGO--CC measures imprecision in gaze following.
 Therefore, a negative sign shows that children showed less imprecision (i.e., were more precise) in the training trials than in the test trials.
-This effect was found across all communities (minimum estimate for training 1 = `r max(trialtypes_est$Training1)`; minimum estimate for training 2 = `r max(trialtypes_est$Training2)`).
+This effect was found across all communities (random effects of trial type within community: minimum estimate for training 1 = `r max(trialtypes_est$Training1)`; 95%CrI [`r trialtypes_est$Training1_q25[which.max(trialtypes_est$Training1)]`; `r trialtypes_est$Training1_q975[which.max(trialtypes_est$Training1)]`]; minimum estimate for training 2 = `r max(trialtypes_est$Training2)`; 95%CrI [`r trialtypes_est$Training2_q25[which.max(trialtypes_est$Training2)]`; `r trialtypes_est$Training2_q975[which.max(trialtypes_est$Training2)]`]).
 The almost perfect performance in training trials indicated that children understood the task and were able to locate the balloon.
 In test trials, children's imprecision was higher, indicating that the task was more challenging.
-All communities showed great individual variation and overlapped in their imprecision levels (see Figure \@ref(fig:fig2)A).
+All communities showed substantial individual variation and overlapped in their imprecision levels (see Figure \@ref(fig:fig2)A).
 
 To identify the sources of variation, we computed intraclass correlations (ICC).
 The variation of children within communities was substantially larger than the variation between the communities.
@@ -508,12 +526,12 @@ The model estimates correlations between participant-specific estimates for each
 The hierarchical shrinkage of the model enables accurate person-specific estimates.
 By incorporating age as a fixed effect, the correlation between the two person-specific estimates represents the age-independent estimate for internal consistency.
 This eliminates the chance that a good internal consistency estimate results from general cognitive development rather than task-specific inter-individual differences.
-Because the process of generating stratified data sets is partly random, the model was fit 50 times for each community.
+Because the process of generating stratified data sets is partly random, the model was fitted 50 times for each community.
 The posterior estimate of the correlation between the two person-specific estimates was taken as the age-independent estimate for internal consistency.
 
 The results are shown in Figure \@ref(fig:fig2)C. 
 Across communities, internal consistency estimates ranged from `r min(int_con$odd_even)` to `r max(int_con$odd_even)` for the odd-even split, `r min(int_con$stratified)` to `r max(int_con$stratified)` for the stratified internal consistency, and `r int_con_wo_uk$min` to `r max(int_con$stratified_agecorrected)` for the age-corrected approach (Plymouth, UK, being an outlier with `r int_con$stratified_agecorrected[int_con$community == "Plymouth (UK)"]`). 
-Following Cohen's suggestions [@cohen1988statistical; @cohen1992power], these correlations constitute large effects (*r* >.50), and indicated good internal consistency.[^1] 
+Following Cohen's suggestions [@cohen1988statistical; @cohen1992power], these correlations constitute large effects (*r* > .50), and indicate good internal consistency.[^1] 
 The results are comparable to the internal consistency estimates found in the original TANGO study [@prein2023tango], and also resemble reliability estimates of classical false belief tasks [@hughes2000good]. 
 
 [^1]: Note that for scale reliability and Cronbach's $\alpha$, values of .7 to .8 have been suggested to be acceptable [@kline1999handbook; @field2012discovering]. However, @kline1999handbook suggested that values below .7 could be realistic for psychological constructs due to their variable nature.
@@ -527,7 +545,7 @@ The TANGO--CC measures imprecision in gaze following across individuals, ages, a
 The task was developed in two phases.
 First, the task's underlying functionality was designed in one community.
 Next, we adapted the superficial features of the task to be used in 17 diverse communities and assessed the task's psychometric properties.
-Children’s imprecision in gaze following highly overlapped between communities: children performed similarly in the communities depending on the trial type, and within-community variation greatly exceeded between-community variation.
+Children’s imprecision in gaze following highly overlapped between communities: children performed better in the training than the test trials, and within-community variation greatly exceeded between-community variation.
 The task showed satisfactory to high reliability across all communities.
 Therefore, we believe the TANGO--CC is a promising task to capture individual differences in social-cognitive development in diverse communities.
 Its design process lays out a much-needed pragmatic approach to conducting cross-cultural individual differences research.
@@ -547,14 +565,14 @@ The task is presented as a web app that can also run offline to enable remote da
 Minimal language demands and an engaging, playful design increase the task's usability.
 Together with a short task duration, this reduces drop-out rates and enables efficient data collection with large sample sizes.
 The TANGO--CC follows a standardized procedure and uses a continuous, objective outcome measure (leaving no room for rater errors).
-An online manual with the most frequently asked questions is available at <https://ccp-odc.eva.mpg.de/TANGO--CC/manual.html>.
-Additional customization can be achieved by adding new stimuli to the open-source code available on GitHub (<https://github.com/ccp-eva/TANGO--CC>).
+An online manual with the most frequently asked questions is available at <https://ccp-odc.eva.mpg.de/tango-cc/manual.html>.
+Additional customization can be achieved by adding new stimuli to the open-source code available on GitHub (<https://github.com/ccp-eva/tango-cc>).
 
 For years, researchers have called for more diverse sampling and culturally valid measures of cognitive development [e.g., @mehta2011validation; @nielsen2017persistent; @matsumoto2006new].
 As @hajduk2020how put it, "using large samples and multisite approaches will align with efforts to improve reproducibility and will clarify both the type and extent of cultural influences on social cognition" (p. 463).
 The TANGO--CC takes a valuable step in this direction by sharing the task and its source code with other researchers.
 @bohn2024universal showed that data collection with the TANGO--CC was feasible in 17 diverse communities in rural and urban settings with varying degrees of market integration and technology exposure.
-While we cannot generalize our findings to all communities worldwide, we found that it induced reliable individual variation in the 17 communities studied by @bohn2024universal.
+While we cannot generalize our findings to all communities worldwide, we found that it captured reliable individual variation in the 17 communities studied by @bohn2024universal.
 Using the TANGO--CC in a new community nevertheless requires sensitivity to the specific context, piloting, and, most importantly, the involvement of researchers or research assistants from the specific community.
 We hope that the TANGO--CC will facilitate future cross-cultural studies to assess social-cognitive development in a wide range of communities.
 
@@ -582,7 +600,7 @@ Reliability for each community was assessed by calculating the internal consiste
 Ideally, we would have additionally assessed the task's retest reliability in each community and checked for relationships with theoretically related constructs to assess validity.
 
 @schilbach2013secondperson pointed out that witnessing social interactions as an observer undoubtedly differs from actively participating in social interactions.
-Of course, the TANGO--CC does not depict a real-life social interaction, and future research should investigate how task performance relates to the real world.
+Of course, the TANGO--CC does not depict real-life social interaction, and future research should investigate how task performance relates to the real world.
 Suggestive evidence comes from a study by @prein2024variation, who found that children's performance in the TANGO was linked to children's visual perspective-taking abilities in real-life social interaction.
 The mode of stimulus presentation surely needs to be kept in mind when administering the TANGO--CC, especially in communities with little technology exposure.
 Additional touch screen training (e.g., more trials of training 1) might prove helpful in these cases.
