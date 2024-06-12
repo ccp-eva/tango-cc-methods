@@ -1,0 +1,166 @@
+---
+title: "Supplements for the manuscript 'Measuring variation in gaze following across communities, ages, and individuals — a showcase of the TANGO-CC'"
+shorttitle: "supplements"
+
+author: 
+  - name : "Julia Christin Prein"
+  - name : "Florian M. Bednarski"
+  - name : "Ardain Dzabatou"
+  - name : "Michael C. Frank"
+  - name : "Annette M. E. Henderson"
+  - name : "Josefine Kalbitz"
+  - name : "Patricia Kanngiesse"
+  - name : "Dilara Keşşafoğlu"
+  - name : "Bahar Köymen"
+  - name : "Maira V. Manrique-Hernandez"
+  - name : "Shirley Magazi"
+  - name : "Lizbeth Mújica-Manrique"
+  - name : "Julia Ohlendorf"
+  - name : "Damilola Olaoba"
+  - name : "Wesley R. Pieter"
+  - name : "Sarah Pope-Caldwell"
+  - name : "Umay Sen"
+  - name : "Katie Slocombe"
+  - name : "Robert Z. Sparks"
+  - name : "Roman Stengelin"
+  - name : "Jahnavi Sunderarajan"
+  - name : "Kirsten Sutherland"
+  - name : "Florence Tusiime"
+  - name : "Wilson Vieira"
+  - name : "Zhen Zhang"
+  - name : "Yufei Zong"
+  - name : "Daniel B. M. Haun"
+  - name : "Manuel Bohn"
+
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : no
+mask              : no
+draft             : no
+classoption       : "man"
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{unicode-math}
+  - \usepackage{setspace}
+  - \usepackage{libertine}
+  - \captionsetup[figure]{font={stretch=1}}
+  - \renewcommand{\thefigure}{S\arabic{figure}} \setcounter{figure}{0}
+  - \renewcommand{\thetable}{S\arabic{table}} \setcounter{table}{0}
+  - |
+    \makeatletter
+    \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-1em}%
+      {\normalfont\normalsize\bfseries\typesectitle}}
+    
+    \renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-\z@\relax}%
+      {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+    \makeatother
+
+csl               : "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"
+documentclass     : "apa7"
+output            :   
+  papaja::apa6_pdf:
+    latex_engine: xelatex
+    keep_tex: true
+editor_options    : 
+  markdown: 
+    wrap: sentence
+bibliography      : "../../references.bib"
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+```
+
+```{r setup, include = FALSE}
+library("papaja")
+library("tidyverse")
+library("ggpubr")
+library("kableExtra")
+library("brms")
+theme_set(theme_classic())
+```
+
+```{r analysis_preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+# Voice-over script 
+The TANGO--CC was designed for a cross-cultural study by @bohn2024universal. For further information on the sample and further methodological choices, see their supplementary material (). 
+
+Here, we repeat the voice over script as it was presented in @bohn2024universal. The first trial of each trial type played audio descriptions of the presented events, and the voice-over script in English was as follows:
+
+## Welcome (before the start of the task)
+
+Hello! Great that you’re here. We’ll now play a balloon game. Can you see the children in the picture over there? We want to play together with the children using the balloon. We’ll now talk you through exactly what will happen.
+
+## Training 1
+
+Look, a girl/boy is standing in the window. And can you see the balloon over there? The balloon always falls down and lands on the ground. And you have to find it! The girl/boy helps you and always looks at the balloon.
+
+[balloon falls down]
+
+Where is the balloon? Touch the balloon!
+
+## Training 2
+
+Perfect, that was great! Now, we’ll continue playing. Can you see the girl/boy and the balloon again? The balloon will fall down again. This time, it will fall behind a hedge. And you have to find it! The girl/boy helps you and looks at the balloon.
+
+[balloon falls down]
+
+Where is the balloon? On the hedge, touch where the balloon is.
+
+## Test
+
+Nice, good job! Now, we’ll continue playing. There is the balloon, the girl/boy and the hedge. The hedge is growing a bit now.
+
+The balloon is behind the hedge now. You can’t see it - but the girl/boy can! The balloon falls to the ground and you have to find it. Remember - the girl/boy always looks at the balloon!
+
+## Goodbye (after the last test trial)
+
+The children are super happy after playing. Thanks a lot for your help! See you soon and goodbye!
+
+# Default settings
+
+When researchers use the default settings of the TANGO-CC, the following settings are applied based on the selected language. Visit this website https://ccp-odc.eva.mpg.de/tango-cc/customize.html and hover over the agent faces to view their IDs. 
+
+-  Bemba (Zambia): background 01, agents f01-f02-f03-f04-m01-m02-m03-m04
+-  Chinese (China): background 01, agents f18-f19-f20-f21-m18-m19-m20-m21
+-  English (India): background 01, agents f22-f23-f24-f25-m22-m23-m24-m25
+-  English (New Zealand): background 01, agents f05-f06-f11-f15-m05-m06-m11-m15
+-  English (Nigeria): background 01, agents f01-f02-f03-f04-m01-m02-m03-m04
+-  English (UK): background 01, agents f05-f07-f08-f10-m03-m06-m09-m11
+-  English (USA): background 01, agents f01-f05-f06-f09-m05-m06-m08-m09
+-  German (Germany): background 01, agents f05-f07-f08-f10-m03-m06-m09-m11
+-  Hai||kom (Namibia): background 01, agents f01-f02-f03-f04-m01-m02-m03-m04
+-  Khwedam (Namibia): background 01, agents f01-f02-f03-f04-m01-m02-m03-m04
+-  Lingala (Rep. Congo): background 02, agents f01-f02-f03-f04-m01-m02-m03-m04
+-  Marathi (India): background 01, agents f22-f23-f24-f25-m22-m23-m24-m25
+-  Shona (Zimbabwe): background 01, agents f01-f02-f03-f04-m01-m02-m03-m04
+-  Spanish (Argentina): background 01, agents f05-f07-f09-f21-m05-m07-m13-m18
+-  Spanish (Mexico): background 01, agents f05-f12-f15-f16-m13-m14-m15-m17
+-  Kiswahili (Uganda): background 02, agents f01-f02-f03-f04-m01-m02-m03-m04
+-  Turkish (Türkiye): background 01, agents f05-f09-f18-f21-m05-m09-m18-m21
+-  Yaka (Rep. Congo): background 02, agents f01-f02-f03-f04-m01-m02-m03-m04
+
+# References
+
+```{=tex}
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+```
+::: {#refs custom-style="Bibliography"}
+:::
+
+```{=tex}
+\endgroup
+```

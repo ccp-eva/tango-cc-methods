@@ -224,6 +224,8 @@ training_trials_plot <- all_trials %>%
 
 training_trials_plot
 saveRDS(training_trials_plot, "../saves/training_trials_plot.rds")
+
+ggsave("../figures/tango-cc-variability.png", width = 15, height = 11, scale = 0.7, bg = "white")
 ```
 
 ```{r icc}
@@ -461,30 +463,57 @@ saveRDS(int_con, "../saves/internal_consistency.rds")
 
 # Combine plots
 
+```{r}
+library(ggplot2)
+library(ggridges)
+
+# Create example data
+data <- data.frame(
+  x = rnorm(1000),
+  y = as.factor(rep(1:10, each = 100))
+)
+
+# Plot using geom_density_ridges
+ggplot(data, aes(x = x, y = y)) +
+  geom_density_ridges()
+
+```
+
+
 ```{r combine_plot}
-# odd_even_plot <- readRDS("../saves/odd_even_plot.rds")
-# stratified_plot <- readRDS("../saves/stratified_plot.rds")
-# stratified_agecorrected_plot <- readRDS("../saves/stratified_agecorrected_plot.rds")
-# training_trials_plot <- readRDS("../saves/training_trials_plot.rds")
+odd_even_plot <- readRDS("../saves/odd_even_plot.rds")
+stratified_plot <- readRDS("../saves/stratified_plot.rds")
+stratified_agecorrected_plot <- readRDS("../saves/stratified_agecorrected_plot.rds")
+training_trials_plot <- readRDS("../saves/training_trials_plot.rds")
 
 top_row <- ggarrange(
   odd_even_plot,
   stratified_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
   stratified_agecorrected_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
   widths = c(1.7, 1.2, 1.2), 
-  nrow = 1,
-  labels = c("B", "C", "", "") 
+  nrow = 1
 )
 
-ggarrange(
-  training_trials_plot,
-  top_row,
-  nrow = 2,
-  heights = c(3, 1.5),
-  labels = c("A", "") 
-)
+ggsave("../figures/tango-cc-reli.png", width = 12, height = 6, scale = 0.8, bg = "white")
 
-ggsave("../figures/tango-cc-results.png", width = 12, height = 11, scale = 0.9, bg = "white")
+# top_row <- ggarrange(
+#   odd_even_plot,
+#   stratified_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
+#   stratified_agecorrected_plot + theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()), 
+#   widths = c(1.7, 1.2, 1.2), 
+#   nrow = 1,
+#   labels = c("B", "C", "", "") 
+# )
+# 
+# ggarrange(
+#   training_trials_plot,
+#   top_row,
+#   nrow = 2,
+#   heights = c(3, 1.5),
+#   labels = c("A", "") 
+# )
+# 
+# ggsave("../figures/tango-cc-results.png", width = 12, height = 5, scale = 0.7, bg = "white")
 ```
 
 # Exploratory: Correlation SD and internal consistency

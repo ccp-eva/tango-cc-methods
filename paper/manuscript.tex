@@ -173,6 +173,9 @@
 
 \linenumbers
 \usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{unicode-math}
 \usepackage{setspace}
 \usepackage{libertine}
 \captionsetup[figure]{font={stretch=1}}
@@ -217,10 +220,10 @@ Correspondence concerning this article should be addressed to Julia Christin Pre
 
 }
 
-\affiliation{\vspace{0.5cm}\textsuperscript{1} Institute of Psychology in Education, Leuphana University Lüneburg\\\textsuperscript{2} Department of Comparative Cultural Psychology, Max Planck Institute for Evolutionary Anthropology\\\textsuperscript{3} Budongo Conservation Field Station\\\textsuperscript{4} School of Psychology, University of Auckland\\\textsuperscript{5} Université Marien Ngouabi\\\textsuperscript{6} Department of Psychology, Stanford University\\\textsuperscript{7} School of Psychology, University of Plymouth\\\textsuperscript{8} Department of Psychology, Koç University\\\textsuperscript{9} Division of Psychology, Communication, and Human Neuroscience, University of Manchester\\\textsuperscript{10} Department of Psychology and Social Work, University of Namibia\\\textsuperscript{11} Department of Psychology, University of York\\\textsuperscript{12} CAS Key Laboratory of Behavioral Science, Institute of Psychology, Chinese Academy of Sciences\\\textsuperscript{13} Department of Psychology, Developmental Psychology, Uppsala University\\\textsuperscript{+} joint last author}
+\affiliation{\vspace{0.5cm}\textsuperscript{1} Institute of Psychology in Education, Leuphana University Lüneburg, Germany\\\textsuperscript{2} Department of Comparative Cultural Psychology, Max Planck Institute for Evolutionary Anthropology, Germany\\\textsuperscript{3} Budongo Conservation Field Station, Uganda\\\textsuperscript{4} School of Psychology, University of Auckland, New Zealand\\\textsuperscript{5} Université Marien Ngouabi, Republic of the Congo\\\textsuperscript{6} Department of Psychology, Stanford University, USA\\\textsuperscript{7} School of Psychology, University of Plymouth, UK\\\textsuperscript{8} Department of Psychology, Koç University, Türkiye\\\textsuperscript{9} Division of Psychology, Communication, and Human Neuroscience, University of Manchester, UK\\\textsuperscript{10} Department of Psychology and Social Work, University of Namibia, Namibia\\\textsuperscript{11} Department of Psychology, University of York, UK\\\textsuperscript{12} CAS Key Laboratory of Behavioral Science, Institute of Psychology, Chinese Academy of Sciences, China\\\textsuperscript{13} Department of Psychology, Developmental Psychology, Uppsala University, Sweden\\\textsuperscript{+} joint last author}
 
 \abstract{%
-Cross-cultural studies are crucial for investigating the universality and robustness of cognitive developmental processes. Yet, suitable methods to measure variability in cognition across languages and communities are lacking. This paper describes the TANGO--CC (Task for Assessing Individual Differences in Gaze Understanding -- Cross-Cultural), a gaze following task designed to measure basic social cognition across individuals, ages, and communities. The TANGO--CC was developed and psychometrically assessed in one setting and subsequently adapted for cross-cultural data collection. Minimal language demands and the web-app implementation allow fast and easy contextual adaptations to each community. The TANGO--CC captured individual differences and showed good internal consistency in a data set from 2.5- to 11-year-old children from 17 diverse communities. Within-community variation outweighed between-community variation. We provide an open-source website for researchers to customize and use the task. The TANGO--CC represents a valuable contribution to assessing basic social cognition in diverse communities, establishing a roadmap for researching cross-cultural individual differences.
+Cross-cultural studies are crucial for investigating cultural variability and universality of cognitive developmental processes. However, cross-cultural assessment tools in cognition across languages and communities are limited. This paper describes a gaze following task designed to measure basic social cognition across individuals, ages, and communities (Task for Assessing iNdividual Differences in Gaze understanding Open -- Cross-Cultural or TANGO--CC). The TANGO--CC was developed and psychometrically assessed in one cultural setting and, with the input of local collaborators, adapted for cross-cultural data collection. Minimal language demands and the web-app implementation allow fast and easy contextual adaptations to each community. The TANGO--CC captures individual- and community-level variation and shows good internal consistency in a data set from 2.5- to 11-year-old children from 17 diverse communities. Within-community variation outweighed between-community variation. We provide an open-source website for researchers to customize and use the task. The TANGO--CC can be used to assess basic social cognition in diverse communities and provides a roadmap for researching community-level and individual-level differences across cultures.
 }
 
 
@@ -230,107 +233,113 @@ Cross-cultural studies are crucial for investigating the universality and robust
 
 \section{Introduction}\label{introduction}
 
-For decades, researchers have advocated for more diverse samples in psychological research and cautioned against relying solely on participants from Western, Educated, Industrialized, Rich, and Democratic (WEIRD) communities (Henrich et al., 2010; Lillard, 1998).
-Despite numerous calls for change, the subject pools reported in high-impact journals still lack diversity (Gutchess \& Rajaram, 2023; Nielsen et al., 2017).
-This lack of representation hinders progress in theory building: inferences about the universal and variable aspects of the human cognitive system cannot be drawn from data collected in single communities (Krys et al., 2024).
+For decades, researchers have advocated for more diverse samples in psychological research and cautioned against relying solely on convenience samples from the Global North (Arnett, 2008; Henrich et al., 2010; Lillard, 1998).
+Despite numerous calls for change, the samples reported in major psychology journals still lack diversity (Apicella et al., 2020; Gutchess \& Rajaram, 2023; Thalmayer et al., 2021).
+This hinders progress in theory building and testing: we cannot draw inferences about universal and variable aspects of the human cognitive system from data collected exclusively in one single communities (Krys et al., 2024).
+While this sampling bias is often discussed within adult psychology, it is equally relevant for developmental psychology (Nielsen et al., 2017).
+Early experiences shape the way children think about and interact with the world and an ontogenetic perspective is needed to explore the foundational aspects of human behavioral diversity (Amir \& McAuliffe, 2020; Broesch et al., 2023; Liebal \& Haun, 2018; Torréns et al., 2023).
 
-One reason for the lack of diversity in psychological studies is the scarcity of suitable methods to collect comparable psychological data in different communities (Bourdage et al., 2023). This shortage of suitable measures is even more prevalent in developmental psychology. In this paper, we describe the construction and psychometric evaluation of a measure of basic social cognition (gaze following) in children as a concrete example for how to overcome this problem.
+There are numerous challenges with collecting cross-cultural, developmental data (Amir \& McAuliffe, 2020; Broesch et al., 2023).
+Cross-cultural studies need reliable and valid measures to systematically capture variation between communities and/or individuals.
+However, studies on social cognition with US-American and European samples rarely report psychometric information (for a review, see Beaudoin et al., 2020), and the picture further deteriorates when we look at cross-cultural social cognition tasks (Bourdage et al., 2023; Hajdúk et al., 2020; Waschl \& Chen, 2022).
+Thus, it is already challenging to find reliable and valid tasks that have measurement sensitivity to detect individual differences within one community, let alone tasks that do so across different communities.
+In this paper, we describe the construction and psychometric evaluation of a cross-cultural measure of basic social cognition (gaze following) in children as a concrete example for how to address this problem.
 
-Studies investigating variation between communities and/or individuals need to ensure that the captured variation is systematic and not just random noise: measures need to be reliable and valid.
-This, of course, applies to all fields of psychology. Given the topic of this paper, we will focus on measures of social cognition for children. Studies on social cognition based on US-American and European samples rarely report psychometric information (for a review, see Beaudoin et al., 2020).
-This picture further deteriorates when we look at cross-cultural social cognition tasks (Bourdage et al., 2023; Hajdúk et al., 2020; Waschl \& Chen, 2022).
-Thus, it is already challenging to find reliable and valid tasks that can capture individual differences within one community, let alone tasks that do so across different communities.
-
-Adapting tasks to diverse communities and re-assessing their validity and reliability might be especially important in the social-cognitive domain.
-If, in theory, stimuli used in social cognition tasks should relate to people's everyday experiences, the tasks need to represent different communities.
-Indeed, task performance can be diminished when stimuli are not adjusted (Peña, 2007).
+Adapting tasks to diverse communities and assessing their validity and reliability might be especially important in the social-cognitive domain.
+Social cognition refers to how an individual processes information in social situations which allows them to understand and predict others' behavior (Adolphs, 1999; Decety, 2020; Frith \& Frith, 2007; Zeigler-Hill et al., 2015).
+If, in theory, stimuli used in social cognition tasks should relate to people's everyday experiences, then tasks themselves should be tuned to the features of specific communities.
+Indeed, task performance can be diminished when stimuli do not reflect characteristics of the participants' communities (Peña, 2007).
 For example, Elfenbein and Ambady (2002) found better emotion recognition for members of the same national, ethnic, or regional group.
 Selcuk et al. (2023) concluded that children often attribute mental states more accurately and more frequently to individuals from the same community.
-This underlines the importance of adapting tasks to each specific cultural context.
 
-Broadly speaking, there are two different approaches that researchers can take to collect cross-cultural data.
-One approach would be to translate the psychological construct into an individually designed study for each community (termed ``assembly''; He and Vijver (2012), Waschl and Chen (2022)).
-While this approach is most flexible and sensitive to cultural differences, it might be most feasible for studying up to a handful of communities as it becomes too demanding and time-consuming.
-Most importantly, this approach assumes that the measured underlying concept is the same, while absolute task scores are not comparable across the communities.
-Another approach would be to use the same standardized procedure across diverse communities, potentially providing a simple translation or modification of culturally inappropriate stimuli (termed ``adoption'' and ``adaptation'', respectively; He and Vijver (2012), Waschl and Chen (2022)).
-This approach is less sensitive to each community's unique characteristics but allows for a direct comparison of the data across communities.
-Examples following this approach include Callaghan et al. (2011), Taumoepeau et al. (2019), Hughes et al. (2018), Hughes et al. (2014), Fujita et al. (2022), Mehta et al. (2011), Stengelin et al. (2020), and Chasiotis et al. (2006).
-The present paper aims to describe the development and psychometric properties of a standardized task that can be adapted to diverse communities.
+There exists a continuum of approaches that researchers can take to collect cross-cultural data, and the decision for a specific method partly depends on whether researchers aim to increasing the \emph{depth} (culture specificity) or \emph{breadth} (standardization across multiple communities) of our psychological knowledge (Amir \& McAuliffe, 2020).
+At one extreme, researchers translate the psychological construct into an individually designed study for each community (termed ``assembly''; He and Vijver (2012), Waschl and Chen (2022)).
+While this approach allows greater flexibility and sensitivity to cultural differences, it might not be feasible for studying a multitude of communities as it becomes too demanding and time-consuming.
+Due to its specificity, observations are limited to each community and absolute task scores might not be comparable across communities.
+A study following this approach is Wefers et al. (2023) who investigated how cultural variations in parenting styles modulated infants' responses to disruptions in social interactions.
+While studies in the Global North often apply the Still-Face Paradigm to assess infants' reactions to unresponsive partners, Wefers et al. (2023) reasoned that this paradigm might not capture infants' everyday interaction routines in communities with proximal (\emph{i.e.,} emphasis on body stimulation) parenting styles.
+By developing the novel No-Touch Paradigm, they found that indeed infants' responses to unresponsive partners were modulated by the cultural context in which they grew up: Kichwa infants from rural Ecuador showed stronger reactions to unresponsive partners in the No-Touch Paradigm compared to the Still-Face Paradigm, while reactions of urban German infants differed less in both paradigms.
 
-The task presented here focuses on gaze following, that is, the ability to identify the attentional focus of another agent.
+At the other extreme, researchers use the same standardized procedure across diverse communities, potentially providing a simple translation or modification of stimuli to ensure they are culturally appropriate (termed ``adoption'' and ``adaptation'', respectively Waschl \& Chen (2022)).
+This approach is less sensitive to each community's unique characteristics but renders quantitative comparisons of data more feasible.
+An example following this approach is the Multilingual Assessment Instrument for Narratives {[}MAIN; Gagarina et al. (2012){]}, which assesses narrative abilities in mono- and multilingual children.
+Extensive piloting and adaptation of MAIN materials ensured that the instrument is culturally appropriate, robust and suitable for cross-linguistic comparisons (Gagarina et al., 2012), and new and revised language versions are continuously added to the MAIN database (Gagarina \& Lindgren, 2020).
+
+The present paper aims to describe the development and psychometric properties of a standardized social cognition task that can be adapted to diverse communities.
+Our task focuses on one of the most fundamental social-cognitive abilities: gaze following, that is, the ability to identify the attentional focus of another agent.
 Gaze following develops early in infancy (Del Bianco et al., 2019; Tang et al., 2024) and contributes to social learning, communication, and collaboration (Bohn \& Köymen, 2018; Hernik \& Broesch, 2019; Shepherd, 2010; Tomasello et al., 2007).
-While gaze following is one of the most fundamental social-cognitive abilities, studies focusing on cultural variations are rare.
-The few existing results are mixed on whether gaze following is influenced by cultural factors or not (Callaghan et al., 2011; Hernik \& Broesch, 2019).
+While the question how social-environmental and cultural factors impact gaze following was recently posed as one of the big open questions in gaze following research (Astor \& Gredebäck, 2022), studies focusing on cultural variations of gaze following are rare.
+Callaghan et al. (2011) investigated gaze following behind barriers in 12- and 17-month-olds from rural Canada (n = 35), Peru (n = 38) and India (n = 65). In their setup, an agent sat next to a wall or container and looked at a toy behind this barrier (experimental condition) or a sticker in front of it (control condition). The researchers then assessed whether and in which conditions the children crawled towards/around the barriers to follow the agent's gaze. While the absolute crawling rates differed across communities, children in all three communities crawled more often to gain visual access when the agent looked at an object behind the barrier compared to in front of it.
+Hernik and Broesch (2019) studied 22 infants between 5 to 7 months of age from Vanuatu and used an eye-tracking procedure displaying a local actor looking at one of two objects.
+Even though face-to-face interactions are less common in interactions between caregivers and children in Vanuatu than in Western communities, the result patterns of gaze following in Ni-Vanuatu infants resembled those of their Western counterparts: infants from Vanuatu followed the agent's gaze to the target object only when preceded by infant-directed, and not adult-directed, speech.
+While these two studies point towards a potential cross-cultural stability of gaze following,
+the lack of psychometrically evaluated tasks and the small number of communities studied limit the generalizability of these findings.
 
-The task presented here builds upon the TANGO (Task for Assessing iNdividual differences in Gaze understanding - Open) by Prein et al. (2023).
-The TANGO measures participants' imprecision in locating an agent's attentional focus.
-It has been shown to reliably capture individual differences in a German child sample and an English-speaking remote adult sample.
-The task was sensitive to developmental changes and linked to children's receptive vocabulary.
-Furthermore, an exploratory analysis showed that children performed equally well in a task version with animal faces compared to cartoon human faces (Prein et al., 2024).
-This suggests that superficial variations in the stimulus design do not influence children's performance in the task.
-
-This paper showcases the TANGO--CC (TANGO -- Cross-Cultural), a standardized gaze following task that can be -- and has been -- adapted to several languages and communities.
+The task presented here aims to tackle these issues and builds upon a previously established gaze-following task called `TANGO' (Task for Assessing iNdividual differences in Gaze understanding - Open) by Prein et al. (2023).
+The TANGO measures how precisely participants locate an agent's attentional focus.
+It reliably measured individual differences in a German child sample and an English-speaking remote adult sample (Prein et al., 2023).
+As we cannot claim a task's generalizability and reliability based on mono-cultural samples, we need to assess the TANGO's psychometric properties in a larger cross-cultural sample.
+This paper showcases the TANGO--CC (TANGO -- Cross-Cultural), a standardized gaze following task that has been adapted to 13 languages and even more communities, and evaluates its psychometric properties by leveraging a large and diverse data set of 2.5- to 11-year-olds from 17 different communities on five continents (Bohn et al., 2024).
 We describe the task's development and provide a tutorial for the open-source website (\url{https://ccp-odc.eva.mpg.de/tango-cc/}).
-We assess its cross-cultural applicability based on data from a large cross-cultural sample of 2.5- to 11-year-olds from 17 different urban/rural communities across the world and discuss the task's psychometrics.
-The task and all its adaptations have been initially designed for a paper by Bohn et al. (2024), and we re-use the data set in this paper.
 
 \section{Task development}\label{task-development}
 
 \subsection{Approach}\label{approach}
 
-In a perfect world, developing a cross-cultural task would include international collaboration and diverse samples from the beginning, already during study design, piloting and item selection.
-As this seems hardly feasible, we present a pragmatic approach.
-The TANGO-CC was first implemented in one context, in our case Leipzig, Germany (Prein et al., 2023).
-Here, the task's reliability and validity were assessed in detail.
-Even though this does not guarantee that the task will be valid and reliable in another context, it substantially increases the likelihood.
-Second, we reassessed the TANGO--CC's measurement quality (i.e., variability and reliability) across diverse communities by analyzing the data from Bohn et al. (2024), who used the task to collect data in 17 communities.
-Therefore, our procedure maintains a balance between a detailed analysis of the task's psychometric properties and a swift and feasible task adaptation.
-In the following, we describe the different steps in further detail.
-We hope that not just the TANGO--CC but also our pragmatic approach to constructing it will be helpful for other researchers.
+The TANGO-CC was implemented in Leipzig, Germany, and thoroughly assessed in terms of reliability and validity (Prein et al., 2023).
+During this process, the cross-cultural adaptation of the task was prepared within a team of cross-cultural psychologists and cognitive scientists.
+In this paper, we assess the TANGO--CC's measurement quality (i.e., variability and reliability) across 17 diverse communities by analyzing the data set from Bohn et al. (2024).
+In the following, we describe the different steps in detail.
 
-In the first step, the task's underlying structure was designed.
-The TANGO--CC measures the precision with which participants locate an agent's attentional focus.
-The participant's task is to locate a target by following the agent's gaze (see Figure \ref{fig:fig1}).
-Precision was measured in a continuous way as the distance between the participant's click on the screen (\emph{i.e.}, where the participant thinks the target is) and the target's real position.
-The task's core functionality is to animate the agent's eyes so that they follow the target's movement.
-This basic structure was then embedded in the task's superficial appearance (e.g., background scene) and audio instructions.
-Once this structure was implemented, adaptations of the task were greatly simplified.
-For example, we can change the background scene, the faces of the agent, and the target without changing how and what the task measures.
+The TANGO--CC is a screen-based task that measures the imprecision with which participants locate a balloon by following an agent's gaze (see Figure \ref{fig:fig1}).
+Participants click or touch the location on the screen where they believe the balloon to be.
+Precision is measured as the distance between the participant's click on the screen and the balloon's real position.
 
-This basic version of the TANGO was psychometrically evaluated in a prototypical WEIRD sample (German child sample; English-speaking remote adult sample) and was found to be highly reliable and valid (Prein et al., 2023).
-While participants got more and more precise in locating the attentional focus of the agent the older they were, individuals differed across all age groups and showed no floor- or ceiling effects.
-Performance in the TANGO was linked to children's receptive vocabulary and weakly related to factors of children's daily social environment.
-In another study, Prein et al. (2024) proposed a computational cognitive model that described gaze following as a social form of vector following.
-Gaze following, as measured by the TANGO, was related to children's non-social vector following and visual perspective-taking abilities.
-These connections to related constructs indicate the task's validity in the tested WEIRD setting.
+During the task development, we decided to implement the task's main functionality independently of the task's appearance. We programmed a function that calculates the x and y coordinates of where the agent's pupil and iris should move to follow the balloon, given the eyes' and balloon's original positions and measures. As the measures of the eyes and balloon are read out dynamically from the image on screen, stimuli can be easily adapted and exchanged. No coordination values for animation are hard-coded into the task's source code. After having programmed this ``backbone'' functionality of the task (\emph{i.e.}, animate the eyes so that they follow the balloon), we added the task's audio instructions and superficial appearance (e.g., background scene, hedge, more agent faces).
 
-To adapt the task for cross-cultural data collection, we generated a set of human cartoon faces that were judged by researchers and research assistants from each target community to be representative of the local population (see Figure \ref{fig:fig1}).
-Similarly, different backgrounds were created that roughly represented a typical accommodation in each community.
-Audio instructions were translated into the corresponding local language.
+This basic version of the TANGO was psychometrically evaluated in a German child sample and an English-speaking remote adult sample and was found to be highly reliable and valid (Prein et al., 2023).
+While children became more precise in locating the attentional focus of the agent with age, individuals differed across all age groups and showed no floor- or ceiling effects.
+In the Leipzig sample, performance in the TANGO was weakly related to factors of children's daily social environment and could predict children's receptive vocabulary 6 months later.
+In a computational cognitive model, Prein et al. (2024) described gaze following as form of social vector following and empirically found that performance in the TANGO was related to children's non-social vector following and visual perspective-taking abilities.
+These connections to related constructs indicate the task's convergent validity in the German child sample.
+
+To adapt the task for cross-cultural data collection, we generated a set of human cartoon faces and background scenes with the feedback from local researchers and research assistants.
+The stimulus pool was adjusted and expanded until the researchers and research assistants from each target community judged the selected stimuli to be representative of the local population and typical accommodation (see Figure \ref{fig:fig2}).
+Audio instructions were translated from English into the corresponding local language(s).
 By back-translating these instructions, we ensured the original meaning did not change.
-Sometimes, specific words were linguistically slightly modified, although functionally equivalent (e.g., ``bush'' instead of ``hedge''), to ensure that all participants understood the instructions.
-In the following, we describe how researchers can use and customize the TANGO--CC in more detail.
+Sometimes, specific words were slightly modified in the target language (e.g., ``bush'' instead of ``hedge'') to ensure that all participants understood the instructions well.
+Based on these adaptations, the TANGO--CC could be applied in 17 communities and 13 different languages (Bohn et al., 2024). In the following, we describe how researchers can use and customize the TANGO--CC in more detail.
 
 \subsection{Features of the TANGO--CC}\label{features-of-the-tangocc}
 
 \subsubsection{Trials}\label{trials}
 
-We quickly recap the TANGO's (Prein et al., 2023) most characteristic features: Participants are asked to locate a balloon with the help of a gaze cue.
-The task consists of three different trial types (see Figure \ref{fig:fig1}).
+
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{../figures/tango-cc-procedure} 
+
+}
+
+\caption{\textbf{Screenshots of the trials.} In training 1, an agent looks at a balloon that falls to the ground, and participants have to respond by clicking/touching the balloon. In training 2, the balloon falls behind the hedge while its flight is still visible. Participants respond by clicking the hedge where they think the balloon is. In test trials, the balloon's movement and final position are covered by a hedge, and participants respond by clicking the hedge. In the task, all movements are smoothly animated (no still pictures). Yellow frames indicate the time point when participants respond (only illustrative, not shown during the task).}\label{fig:fig1}
+\end{figure}
+
+The task consists of three different trial types: training 1, training 2, and test trials (see Figure \ref{fig:fig1}).
 In every trial, participants see an agent (boy or girl) looking out of a house with a balloon (red, blue, green, or yellow) in front of them.
-The balloon falls down to the ground, while the eyes of the agent follow the movement of the balloon in a way that their centers always align.
+The balloon falls down to the ground. The eyes of the agent follow the movement of the balloon in a way that the balloon center and the pupil center always align.
 Depending on the trial type, participants have different visual access to the balloon's position.
-In training 1, participants see the full trajectory of the balloon and directly have to touch the balloon itself.
+In training 1, participants see the full trajectory of the balloon and directly have to click the balloon itself.
 In training 2, participants see most of the balloon's movement, but a hedge covers the final location.
 In test trials, a hedge grows at the beginning of the trial and participants see neither the movement nor the final position of the balloon.
 The first trial of each type contains an audio description of the presented events (see supplements of Bohn et al. (2024)).
 Notably, the instructions explicitly state that the agent is looking at the balloon.
 
-The outcome variable is the distance between the participant's touch and the balloon's center.
-Trials can be completed quickly and efficiently so that children can easily complete 15 trials within 10 minutes.
-This drastically reduces drop-out rates.
-By using essentially self-explanatory animations, language demands are kept to a minimum.
-No differential feedback is given to keep trials comparable and avoid learning effects.
+The outcome variable is the distance between the participant's click and the balloon's center.
+Trials can be completed quickly and efficiently so that children can complete 15 trials within 10 minutes, and few children fail to complete the task.
+By using self-explanatory animations, language demands are kept to a minimum.
+The task uses simple audio instructions, which makes the task accessible to children from different age groups, and no reading skills are needed.
+There is no feedback during the task to prevent learning effects across trials.
 
 \subsubsection{Randomization}\label{randomization}
 
@@ -339,38 +348,42 @@ For the balloon positions, the entire width of the screen (1920 in ``SVG units''
 Exact coordinates (value between 0 far left and 1920 far right) within each bin are then randomly generated.
 The number of repetitions for each agent, balloon color, and balloon bin is calculated based on the total number of trials and the number of unique agents, balloon colors, and bins, respectively.
 All agents, balloon colors, and bins appear equally often and are not repeated in more than two consecutive trials.
-If the total number of trials is not divisible by the number of unique elements, additional elements are randomly selected to make up for the remainder.
+If the total number of trials is not divisible by the number of unique elements, some elements (\emph{i.e.,} some agents, balloon colors, bins) are randomly repeated to make up for the remainder.
 
 \subsubsection{Cross-cultural customization}\label{cross-cultural-customization}
 
-The TANGO--CC can be accessed via the following link: (\url{https://ccp-odc.eva.mpg.de/tango-cc/}).
-In the first step, researchers can select the language for audio instructions, currently available for 13 different languages and even more dialects (see Table 1).
-All written instructions are presented in English because they are not directed to the participant but to the research assistant who guides the participant through the task.
-The task can either be started with the default settings or further customized.
+When reseachers visit the TANGO--CC's website
+(\url{https://ccp-odc.eva.mpg.de/tango-cc/}), they can select the language for audio instructions which are currently available for 13 different languages and five more dialects (see Table 1). To add a new language, researchers have two options:
+(1) for using their own audio instructions in the offline version of the task, researchers can download the task, exchange the audio instructions in the dist folder (in the folder sounds \textgreater{} custom) and select ``Custom'' in the language drop down menu.
+For detailed instructions, see the TANGO--CC's manual (\url{https://ccp-odc.eva.mpg.de/tango-cc/manual.html}).
+(2) For adding a new language in the online version of the task, researchers can contact the first author of this paper. Please note that this option requires new audio recordings by the interested reseachers, which will then be openly available for all users of the task.
+All written instructions in the task are solely for the research assistant to help them guide participants through the task; these instructions are solely available in English.
+The task can either be started with the default settings or further customized by adapting the numbers of trials, agents, and background scenes.
 The default settings use the version applied in Bohn et al. (2024) based on the selected language.
 
-If researchers choose to customize the task (see Figure \ref{fig:fig1}), the number of trials can be chosen for each trial type.
-As the trial types build up on each other, each trial type is necessary to understand the structure of the task and needs to be completed before the next trial type starts.
-Therefore, no trial type can be skipped.
+If researchers choose to customize the task (see Figure \ref{fig:fig2}), they can adjust the number of trials for each trial type, but not their sequence.
+Specifically, trial types build on each other and participants need to complete each trial type (without skipping any) to understand the structure of the task.
 The minimum number of trials per type is 1; the maximum is 100.
-One out of four different backgrounds can be selected.
-Finally, there are 50 diverse human faces (50\% female, 50\% male) from which researchers can choose.
-No constraint exists on how many faces are allowed (min 1, max 50).
-Once all the settings are adjusted, the customized task is compiled.
+Furthermore, researchers can customize backgrounds by selecting one of four different backgrounds.
+Finally, researchers can choose from 50 diverse cartoon-like human faces (50\% female, 50\% male) and freely select how many different faces to include (min 1, max 50).
+Once all the settings are selected, the customized task is compiled.
+To save the selected settings, researchers can bookmark the URL to easily access the customized task.
 
-In the last step, researchers can enter an alphanumeric participant identifier (1 - 8 characters) and enable a webcam recording of the participant, if needed.
-To save the selected settings, researchers can bookmark the URL so that the customized task can be easily accessed, and only the participant ID and choice of webcam recording need to be entered again.
-The task can then be started.
+In the last step, researchers can enter an alphanumeric participant identifier (1 - 8 characters) and enable a webcam recording of the participant, if needed. A webcam recording might prove especially helpful for unsupervised online data collection to ensure that the participant is alone during the task and no help is provided.
+The participant identifier and webcam choice has to be provided every time the task is run.
 
-The source code of the task is available on GitHub (\url{https://github.com/ccp-eva/tango-cc}).
-By directly editing the \texttt{HTML} and \texttt{JavaScript} code, researchers gain even more flexibility in adjusting the task to their needs.
+The source code of the task is openly available on GitHub (\url{https://github.com/ccp-eva/tango-cc}).
+By directly editing the \texttt{HTML} and \texttt{JavaScript} code, researchers can further modify the task as needed.
+
+We created a public OSF page (\url{https://doi.org/10.17605/OSF.IO/P2EGU}) where we plan to collect data sets that used the TANGO-CC.
+Researchers who have collected data using the TANGO--CC can share their data with the community by contacting the first author of this paper or visiting this OSF repository.
 
 \begin{table}[tbp]
 
 \begin{center}
 \begin{threeparttable}
 
-\caption{\label{tab:langtab}Languages available for the audio instructions in the TANGO--CC}
+\caption{\label{tab:langtab}Current language options available for the audio instructions in the TANGO--CC}
 
 \begin{tabular}{lll}
 \toprule
@@ -380,17 +393,22 @@ Bemba & Bantu & Zambia\\
 Chinese & Sino-Tibetan & China\\
 English & Indo-European & USA / UK / India / Nigeria / New Zealand\\
 German & Indo-European & Germany\\
-Hai||om & Khoesan & Namibia\\
-Khewdam & Khoesan & Namibia\\
+(≠Akhoe) Hai||om & Khoe-Kwadi & Namibia\\
+Khwedam & Khoe-Kwadi & Namibia\\
 Lingala & Bantu & Rep. Congo\\
 Marathi & Indo-European & India\\
 Shona & Bantu & Zimbabwe\\
-Spanish & Indo-European & Argentina / Mexico\\
-Swahili & Bantu & Uganda\\
+Spanish & Indo-European & Argentina (Rioplatense Spanish) / Mexico (Mexiquense Spanish)\\
+Kiswahili & Bantu & Uganda\\
 Turkish & Turkic & Türkiye\\
 Yaka & Bantu & Rep. Congo\\
 \bottomrule
+\addlinespace
 \end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} In those cases where more than one speaker's country of origin is listed, the audio instructions were recorded multiple times by different speakers. For example, the English instructions are available in five different versions.}
+\end{tablenotes}
 
 \end{threeparttable}
 \end{center}
@@ -401,41 +419,42 @@ Yaka & Bantu & Rep. Congo\\
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../figures/TANGO-CC-procedure} 
+{\centering \includegraphics[width=1\linewidth]{../figures/tango-cc-screenshot} 
 
 }
 
-\caption{\textbf{Customizable components of the TANGO--CC.} Researchers can select the language of the audio instructions, the number of trials per trial type, the background, and the agent's face. Screenshots of the trials show the proceeding events: In training 1, an agent looks at a balloon that falls to the ground, and participants have to respond by touching the balloon. In training 2, the balloon falls behind the hedge while its flight is still visible. Participants respond by touching the hedge where they think the balloon is. In test trials, the balloon's movement and final position are covered by a hedge, and participants respond by touching the hedge. In the task, all movements are smoothly animated (no still pictures). Yellow frames indicate the time point when participants respond (only illustrative, not shown during the task).}\label{fig:fig1}
+\caption{\textbf{Customizable components of the TANGO--CC.} Researchers can select the language of the audio instructions (see Table 1), the number of trials per trial type, the background, and the agent's face.}\label{fig:fig2}
 \end{figure}
 
 \subsubsection{Task implementation}\label{task-implementation}
 
 The task was implemented in \texttt{JavaScript}, \texttt{HTML}, and \texttt{CSS} and is presented as a web app.
-It can be accessed on any web browser and does not require prior installation.
-The online version of the task has been proven convenient for unsupervised data collection (for example, using participant recruitment services like \emph{Prolific}; see Prein et al. (2023)) and sharing the task internationally.
-Importantly, the web app implementation does not necessarily need a working WIFI connection: An offline, local version of the task can be quickly set up for devices that support Node.js (\url{https://nodejs.org/en}).
-This is an especially useful feature for researchers working in remote areas with limited internet access.
+It can be accessed on any modern web browser on any device (e.g., computer or tablet) and does not require prior installation (please note that configurations of browsers and JavaScript may change in the future).
+Participant's responses can be recorded on a touchscreen or with a mouse or track pad.
+The online version of the task can be used for unsupervised data collection (for example, using online platforms like \emph{Prolific}; see Prein et al. (2023)). The task can be shared easily internationally by providing the URL.
+Importantly, the web app implementation does not require a working WIFI connection: An offline version of the task can be downloaded and quickly set up for devices that support Node.js (\url{https://nodejs.org/en}).
+This is an especially useful feature for researchers working in locations with limited internet access.
 
-The stimuli are embedded as Scalable Vector Graphics (SVG).
-The setup allows for an easy adaptation of task elements and ensures that picture quality, aspect ratio, and relative object positioning are constant.
-The task is programmed so that responses are only registered when the participant touches the relevant part of the screen (i.e., in test trials, the hedge).
+The stimuli are embedded as Scalable Vector Graphics (SVG; an image format that stores image elements via mathematical formulas based on points and lines on a grid).
+SVGs ensure that the picture quality, aspect ratio, and relative object positioning are constant. Furthermore, stimuli are added as individual components to the image scene which allows for an easy adaptation of task's elements (in contrast to other image formats that consist of only one combined layer that would need entire replacement).
+The task is programmed so that responses are only registered when the participant clicks the relevant part of the screen (i.e., in test trials, when they click the hedge).
 Furthermore, clicks are only registered after the voice recordings stop playing.
 An audio reminder is played again if no click is registered within 5 seconds.
 
 The website does not use cookies, nor does it upload any data to servers; that is, the data is only stored locally on the device.
 The output of the task is a CSV file (and WEBM file if a webcam recording was selected) that contains the participants' responses and can be easily imported into statistical software for further analysis.
-The file will be stored in the device's downloads folder and is named after the following pattern: ``tangoCC-participantID-YYYY-MM-DD\_hh\_mm\_ss''.
+The file will be stored in the device's downloads folder and is named after the following pattern: ``tangoCC-participantID-YYYY-MM-DD\_hh\_mm\_ss''. To modify the storage location on the device, researchers can change the designated downloads folder in the browser settings.
 
 \section{Psychometric evaluation}\label{psychometric-evaluation}
 
 \subsection{Data set}\label{data-set}
 
-We used the data set from Bohn et al. (2024) for the psychometric evaluation of the TANGO--CC.
-They collected data using the TANGO--CC in a sample of \emph{N} = 1377 children between 2.5 to 11 years of age.
+We used the data set from Bohn et al. (2024) for psychometric evaluation of the TANGO--CC.
+The data set contains a sample of \emph{N} = 1377 children, aged 2.5 to 11 years.
 Participants came from 17 communities on five continents, in rural and urban settings, with varying degrees of market integration and technology exposure.
-Bohn et al. (2024) carried out 19 trials (1 training 1, 2 training 2, and 16 test trials, of which the first of each type had audio instructions).
+Bohn et al. (2024) carried out 19 trials (1 training 1, 2 training 2, and 16 test trials, of which the first of each type had audio instructions) on a touchscreen device.
 Faces, backgrounds, and languages were chosen by researchers and assistants with experience in the specific community.
-For further details on the communities and data collection procedures, see the supplements of Bohn et al. (2024).
+For further details on the communities, participant information, and data collection procedures, see the supplements of Bohn et al. (2024).
 
 \subsection{Individual differences}\label{individual-differences}
 
@@ -443,134 +462,136 @@ For further details on the communities and data collection procedures, see the s
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../figures/TANGO-CC-results} 
+{\centering \includegraphics[width=1\linewidth]{../figures/tango-cc-variability} 
 
 }
 
-\caption{\textbf{Measurement of the TANGO--CC by community.} (A) Mean imprecision in locating the agent's attentional focus by community (alphabetically) and trial type. Imprecision is defined as the distance between the participant's touch and the balloon's center in units of balloon width. For a depiction of each trial's procedure, see Figure \ref{fig:fig1}. (B) Internal consistency estimates by community, following three different approaches. In the odd-even split, the size of points reflects the sample size in each community. In the stratified approach with and without age correction, density curves show the posterior distributions of the GLMM.}\label{fig:fig2}
+\caption{\textbf{Variability measured by the TANGO--CC.} Mean imprecision in locating the agent's attentional focus by community (alphabetically) and trial type. Imprecision is defined as the distance between the participant's click and the balloon's center in units of balloon width. For a depiction of each trial's procedure, see Figure \ref{fig:fig1}.}\label{fig:fig3}
 \end{figure}
 
 First, we inspected the mean and standard deviations by community and compared performance in each trial type (training 1, training 2, test trials).
-Performance was defined as the absolute click distance between the target center and the click x coordinate (measured in balloon widths).
-Across communities, children performed best in training 1 (mean = 0.19, sd = 0.63), followed by training 2 (mean = 0.79, sd = 1.44) and test trials (mean = 2.21, sd = 2.03; see Figure \ref{fig:fig2}A).
+Performance was defined as the absolute distance between the target center and the x coordinate of the participant's click (measured in balloon widths).
+Across communities, children performed best in training 1 (mean = 0.19, sd = 0.63), followed by training 2 (mean = 0.79, sd = 1.44) and test trials (mean = 2.21, sd = 2.03; see Figure \ref{fig:fig3}).
 
-To formally estimate the effect of trial type on performance in the TANGO--CC, we fit a generalized linear mixed model (GLMM) predicting the task performance by trial type (reference category: test trials).
+To formally estimate the effect of trial type on performance in the TANGO--CC, we fitted a generalized linear mixed model (GLMM) predicting the task performance by trial type (reference category: test trials).
 All analyses were run in R version 4.4.0 (2024-04-24) (R Core Team, 2024).
 GLMMs were fitted with default priors using the function \texttt{brm} from the package \texttt{brms} (Bürkner, 2017, 2018).
 The model included random effects for trial type by community (model notation in \texttt{R:\ imprecision\ \textasciitilde{}\ trialtype\ +\ (trialtype\ \textbar{}\ community)}), and imprecision was modeled by a \texttt{lognormal} distribution.
 We inspected the posterior distribution (mean and 95\% Credible Interval (CrI)) for the trial type estimates.
 
-Our GLMM analysis supported the visual inspection of the data: the fixed-effect estimates for training 1 (\(\beta\) = -3.26; 95\% CrI {[}-3.41; -3.10{]}) and training 2 (\(\beta\) = -1.47; 95\% CrI {[}-1.58; -1.35{]}) were negative and reliably different from zero.
-Please note that the TANGO--CC measures imprecision in gaze following.
-Therefore, a negative sign shows that children showed less imprecision (i.e., were more precise) in the training trials than in the test trials.
+Our GLMM analysis supported the visual inspection of the data: the fixed-effect estimates for training 1 (\(\beta\) = -3.26; 95\% CrI {[}-3.41; -3.10{]}) and training 2 (\(\beta\) = -1.47; 95\% CrI {[}-1.58; -1.35{]}) were negative and reliably different from zero. \footnote{Please note that the TANGO--CC measures imprecision in gaze following.
+  Therefore, a negative sign indicates that children showed less imprecision (i.e., were more precise) in the training trials than in the test trials.}
 This effect was found across all communities (random effects of trial type within community: minimum estimate for training 1 = -2.87; 95\%CrI {[}-3.11; -2.60{]}; minimum estimate for training 2 = -1.27; 95\%CrI {[}-1.51; -0.98{]}).
-The almost perfect performance in training trials indicated that children understood the task and were able to locate the balloon.
+The almost perfect performance in training trials indicated that children understood the task and were able to correctly indicate the location of the balloon when its path was (mostly) visible.
 In test trials, children's imprecision was higher, indicating that the task was more challenging.
-All communities showed substantial individual variation and overlapped in their imprecision levels (see Figure \ref{fig:fig2}A).
+All communities showed substantial individual variation and overlapped in their imprecision levels (see Figure \ref{fig:fig3}).
 
 To identify the sources of variation, we computed intraclass correlations (ICC).
-The variation of children within communities was substantially larger than the variation between the communities.
+The variation of children's imprecision within communities was substantially larger than the variation between the communities.
 The mean within-community variance was 1.28, ranging from 0.24 (in Pune, India) to 3.46 (in Chimfunshi, Zambia).
 Between-community variance was 0.34.
 The ICC, representing the proportion of between-community variance relative to the total variance (sum of within- and between-community variance), was 0.02.
-This indicates that only 2\% of the total variability in the data can be attributed to differences between communities, while the remaining 98\% are attributed to differences within communities (Kusano et al., 2024).
+This indicated that only 2\% of the total variability in the data could be attributed to differences between communities, while the remaining 98\% were attributed to differences within communities (Kusano et al., 2024).
 
 \subsection{Reliability}\label{reliability}
+
+
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{../figures/tango-cc-reli} 
+
+}
+
+\caption{\textbf{Reliability of the TANGO--CC by community.} Internal consistency estimates by community, following three different approaches. In the odd-even split, the size of points reflects the sample size in each community. In the stratified approach with and without age correction, density curves show the posterior distributions of the GLMM.}\label{fig:fig4}
+\end{figure}
 
 To assess reliability, we estimated internal consistency in each community in three different ways.
 First, data of each participant was split into odd and even trials and a Pearson correlation was calculated between the aggregated scores of the two halves.
 Second, using the function \texttt{by\_split} from the \texttt{splithalfr} package (Pronk et al., 2022), data was stratified by target centrality (capturing trial difficulty), and a Pearson correlation was calculated between the matched halves.
-Third, a data set was generated with stratified test halves by target centrality.
-Then, we followed the Generalized Linear Mixed Model (GLMM) approach introduced by Rouder and Haaf (2019).
+Third, a data set was generated with stratified test halves by target centrality and we applied the Generalized Linear Mixed Model (GLMM) approach introduced by Rouder and Haaf (2019).
 A GLMM was fitted with the mean imprecision as the outcome, age as the predictor, and test half and participant id as random effects (model notation: \texttt{imprecision\ \textasciitilde{}\ age\ +\ (0\ +\ half\ \textbar{}\ subjid)}).
 The model estimates correlations between participant-specific estimates for each test half.
 The hierarchical shrinkage of the model enables accurate person-specific estimates.
 By incorporating age as a fixed effect, the correlation between the two person-specific estimates represents the age-independent estimate for internal consistency.
-This eliminates the chance that a good internal consistency estimate results from general cognitive development rather than task-specific inter-individual differences.
+This removes the possibility that a good internal consistency estimate results from general cognitive development rather than task-specific inter-individual differences.
 Because the process of generating stratified data sets is partly random, the model was fitted 50 times for each community.
 The posterior estimate of the correlation between the two person-specific estimates was taken as the age-independent estimate for internal consistency.
 
-The results are shown in Figure \ref{fig:fig2}C.
+The results are shown in Figure \ref{fig:fig4}.
 Across communities, internal consistency estimates ranged from 0.51 to 0.80 for the odd-even split, 0.62 to 0.89 for the stratified internal consistency, and 0.62 to 0.87 for the age-corrected approach (Plymouth, UK, being an outlier with 0.28).
 Following Cohen's suggestions (Cohen, 1988, 1992), these correlations constitute large effects (\emph{r} \textgreater{} .50), and indicate good internal consistency.\footnote{Note that for scale reliability and Cronbach's \(\alpha\), values of .7 to .8 have been suggested to be acceptable (Field et al., 2012; Kline, 1999). However, Kline (1999) suggested that values below .7 could be realistic for psychological constructs due to their variable nature.}
 The results are comparable to the internal consistency estimates found in the original TANGO study (Prein et al., 2023), and also resemble reliability estimates of classical false belief tasks (Hughes et al., 2000).
 
 In an exploratory analysis, we found that communities with larger individual variation showed higher internal consistency estimates (Pearson's \emph{r} = 0.46, 95\%CI {[}-0.03; 0.77{]}).
-Please note that this could be influenced by outliers and that the sample size here (\emph{N} = 17 communities) is too small to make substantial claims.
+This suggests that the less variation a task can capture within a community, the lower the reliability.
+However, please note that this correlation could be influenced by outliers and that the sample size here (\emph{N} = 17 communities) is too small to make substantial claims.
 
 \section{Discussion}\label{discussion}
 
 The TANGO--CC measures imprecision in gaze following across individuals, ages, and communities.
-The task was developed in two phases.
-First, the task's underlying functionality was designed in one community.
-Next, we adapted the superficial features of the task to be used in 17 diverse communities and assessed the task's psychometric properties.
-Children's imprecision in gaze following highly overlapped between communities: children performed better in the training than the test trials, and within-community variation greatly exceeded between-community variation.
-The task showed satisfactory to high reliability across all communities.
-Therefore, we believe the TANGO--CC is a promising task to capture individual differences in social-cognitive development in diverse communities.
-Its design process lays out a much-needed pragmatic approach to conducting cross-cultural individual differences research.
+Children's imprecision in gaze following showed highly similar result patterns across communities: children performed better in the training than the test trials, and within-community variation greatly exceeded between-community variation.
+Furthermore, the task showed satisfactory to high reliability across all communities.
+Therefore, the TANGO--CC is a suitable task to capture individual differences in social-cognitive development in diverse communities.
 
-A similar approach to task development was taken by Mehta et al. (2011).
-The researchers (1) selected social cognition measures that have been established in WEIRD settings, (2) adapted the agent's names, appearance, backgrounds, and languages to the local context, and (3) assessed the task's validity and internal consistency in the new setting.
-Participants were adults with and without schizophrenia from India. Theory of Mind tasks included Sally-Anne, Smarties, Ice cream van and Missing cookies stories.
-For this specific context, the authors' approach yielded a successful adaptation of social cognition measures for the tested Indian (Hindi/Kannada) communities.
+The TANGO--CC's design process lays out a much-needed pragmatic approach to studying community-level and individual-level differences across cultures:
+While we performed a detailed psychometric evaluation of the task in a German setting, we collaborated with local researchers for the cross-cultural stimulus development and selection.
+Importantly, we re-assessed the TANGO--CC's psychometric properties in a large and diverse sample of children.
+The data set by Bohn et al. (2024) showed that data collection with the TANGO--CC was feasible in 17 diverse communities in rural and urban settings with varying degrees of market integration and technology exposure.
+While we cannot generalize our findings to all communities worldwide, we found that the TANGO-CC captured reliable individual variation in all communities studied by Bohn et al. (2024).
+We hope that not just the TANGO--CC but also our pragmatic approach to constructing it will be helpful for other researchers.
+Using the TANGO--CC (or any other task) in a new community requires sensitivity to the specific context, piloting, and, most importantly, the involvement of researchers or research assistants from the specific community.
+We recommend that researchers consider generalizability concerns and cross-cultural applications of their tasks and collaborate with local researchers at early stages of task development (Torréns et al., 2023).
 
 Bourdage et al. (2023) pointed out a major challenge with adapting social cognition tasks to diverse communities: the number of world cultures is vast, and communities are constantly changing.
-Therefore, a promising approach might be to provide tasks with a modular system where components can be exchanged according to the local context.
-In the case of the TANGO--CC, the task can not only be adapted to different languages, cartoon faces, and backgrounds (see Figure \ref{fig:fig1}) but also updated with new stimuli.
-Unlike studies that present sequential, hand-painted pictures that are difficult to adapt (Mehta et al., 2011), the TANGO--CC uses SVGs that can be easily exchanged.
+Therefore, a promising approach might be to provide tasks with a modular system where components can be modified (\emph{i.e.}, building block structure).
+In the case of the TANGO--CC, the task cannot only be adapted to different languages, cartoon faces, and backgrounds (see Figure \ref{fig:fig2}) but also updated with new stimuli.
+Unlike studies that present sequential, hand-painted pictures that are difficult to adapt (Mehta et al., 2011), the TANGO--CC uses SVGs (Scalable Vector Graphics) that can be easily exchanged.
 
-The biggest strength of the TANGO--CC is its flexibility.
-The task is presented as a web app that can also run offline to enable remote data collection.
-Minimal language demands and an engaging, playful design increase the task's usability.
-Together with a short task duration, this reduces drop-out rates and enables efficient data collection with large sample sizes.
-The TANGO--CC follows a standardized procedure and uses a continuous, objective outcome measure (leaving no room for rater errors).
-An online manual with the most frequently asked questions is available at \url{https://ccp-odc.eva.mpg.de/tango-cc/manual.html}.
-Additional customization can be achieved by adding new stimuli to the open-source code available on GitHub (\url{https://github.com/ccp-eva/tango-cc}).
+Compared to one of the most commonly used social cognition measure -- the change-of-location false belief task (Baron-Cohen et al., 1985; Wimmer \& Perner, 1983) -- the TANGO--CC has several advantages: a continuous outcome measure which can capture individual differences, a short task duration that allows for more trials per child, stimuli that can be easily adapted, and known psychometric properties across 17 communities.
+The task is presented as a web app that enables efficient data collection with large sample sizes, while it can also be used to collect data offline in locations without reliable internet connection.
+The TANGO--CC follows a standardized procedure, which leaves no room for rater errors and greatly simplifies online training of research assistants.
+Furthermore, minimal language demands and an engaging, playful design increase the task's usability and reduce non-completion rates.
 
-For years, researchers have called for more diverse sampling and culturally valid measures of cognitive development (Matsumoto \& Yoo, 2006; e.g., Mehta et al., 2011; Nielsen et al., 2017).
-As Hajdúk et al. (2020) put it, ``using large samples and multisite approaches will align with efforts to improve reproducibility and will clarify both the type and extent of cultural influences on social cognition'' (p.~463).
-The TANGO--CC takes a valuable step in this direction by sharing the task and its source code with other researchers.
-Bohn et al. (2024) showed that data collection with the TANGO--CC was feasible in 17 diverse communities in rural and urban settings with varying degrees of market integration and technology exposure.
-While we cannot generalize our findings to all communities worldwide, we found that it captured reliable individual variation in the 17 communities studied by Bohn et al. (2024).
-Using the TANGO--CC in a new community nevertheless requires sensitivity to the specific context, piloting, and, most importantly, the involvement of researchers or research assistants from the specific community.
-We hope that the TANGO--CC will facilitate future cross-cultural studies to assess social-cognitive development in a wide range of communities.
-
-A valid question is whether the TANGO--CC measures the same construct across different groups.
-This so-called measurement invariance is often seen as a requirement for a ``fair'' cross-cultural comparison and relies on minimizing group differences while individual differences are magnified.
-As Kusano et al. (2024) put it: ``The research challenge is to achieve a balance between ensuring methodological ``fairness'' at the individual level while also recognizing and capturing genuine sociocultural variability'' (p.~34).
-We argue that the TANGO--CC measures a fundamental social-cognitive ability that is likely similar across communities.
+The TANGO--CC is a screen-based task.
 Bohn et al. (2024) have shown that children with no prior touchscreen exposure were less precise in the TANGO--CC than children with prior experience.
-However, individual differences were also found in communities with 100\% touch screen exposure, showing that this factor alone could not explain children's performance in the task (Bohn et al., 2024).
+However, individual differences were also found in communities with 100\% touchscreen exposure, showing that this factor alone could not explain children's performance in the task (Bohn et al., 2024).
 Notably, even though the touchscreen experience caused absolute differences in task performance, all communities showed the same processing signature.
 A recent computational cognitive model described gaze following as a process of estimating pupil angles and the corresponding gaze vectors (Prein et al., 2024).
-The model predicted that all individuals use the same process to locate an attentional focus but differ in their uncertainty around the estimated pupil angles, which results in less precision.
-Bohn et al. (2024) found clear support for this model in every community they studied, suggesting that children all over the world process gaze in a similar way.
-In this manuscript, we could also show that internal consistency was high across all communities, meaning that the task captured individual differences in a similar way.
-Consequently, the TANGO--CC seems to measure systematic individual differences across diverse communities.
+Bohn et al. (2024) found clear support for this model in every community studied, suggesting that children all over the world process gaze in a similar way.
+Nevertheless, the mode of stimulus presentation needs to be kept in mind when administering the TANGO--CC, especially in communities with little technology exposure.
+Additional touchscreen training (e.g., more trials of training 1) might prove helpful in these cases.
 
+Schilbach et al. (2013) pointed out that witnessing social interactions as an observer undoubtedly differs from actively participating in social interactions.
+First evidence suggests that the TANGO--CC indeed taps into social cognition as utilized in real life: Prein et al. (2024) found that children's perspective-taking abilities in a personal social interaction was linked to performance in the TANGO, but less so to a matched, non-social vector following task.
+However, this study exclusively relied on a German sample and future research should investigate whether the relationship between the TANGO--CC and perspective-taking abilities holds across communities.
+
+We have reported reliability estimates for each community by calculating internal consistency.
+Ideally, we would have additionally evaluated the task's test-retest reliability in each community and checked for relationships with theoretically related constructs to assess validity.
+Unfortunately, this might not always be feasible in large-scale cross-cultural studies due to organizational and financial constraints.
+An example of assessing the TANGO's predictive validity is a study conducted in Leipzig, Germany, which used the TANGO to predict children's receptive vocabulary 6 months later (Prein et al., 2023).
+Future cross-cultural studies could investigate the TANGO--CC's predictive validity and its relationship to other social-cognitive abilities (e.g., Theory of Mind, language development) in diverse communities.
+
+Measurement invariance (\emph{i.e.}, measuring the same construct across different communities) is often seen as a requirement for a ``fair'' cross-cultural comparison: it is important that any group differences are not the result of the task unintentionally tapping into different underlying constructs.
+As Kusano et al. (2024) put it: ``The research challenge is to achieve a balance between ensuring methodological ``fairness'' at the individual level while also recognizing and capturing genuine sociocultural variability'' (p.~34).
+We argue that the TANGO--CC measures a fundamental social-cognitive ability that is likely similar across communities.
 Selcuk et al. (2023) pointed out that researchers should study both within- and between-culture variability in the development of social cognition since sometimes within-culture differences exceed between-culture differences.
 Indeed, we found that within-group variability was greater than between-group variability.
 While we believe that the TANGO--CC can be used to compare mean differences across communities, we would recommend using it to study individual differences within communities.
 
-\section{Limitations}\label{limitations}
-
-The TANGO--CC and its psychometric properties need to be considered against some limitations.
-Reliability for each community was assessed by calculating the internal consistency.
-Ideally, we would have additionally assessed the task's retest reliability in each community and checked for relationships with theoretically related constructs to assess validity.
-
-Schilbach et al. (2013) pointed out that witnessing social interactions as an observer undoubtedly differs from actively participating in social interactions.
-Of course, the TANGO--CC does not depict real-life social interaction, and future research should investigate how task performance relates to the real world.
-Suggestive evidence comes from a study by Prein et al. (2024), who found that children's performance in the TANGO was linked to children's visual perspective-taking abilities in real-life social interaction.
-The mode of stimulus presentation surely needs to be kept in mind when administering the TANGO--CC, especially in communities with little technology exposure.
-Additional touch screen training (e.g., more trials of training 1) might prove helpful in these cases.
+For years, researchers have called for more diverse sampling and culturally valid measures of cognitive development (Matsumoto \& Yoo, 2006; e.g., Mehta et al., 2011; Nielsen et al., 2017).
+As Hajdúk et al. (2020) said, ``using large samples and multisite approaches will align with efforts to improve reproducibility {[}replicability{]} and will clarify both the type and extent of cultural influences on social cognition'' (p.~463).
+Similarly, Elson et al. (2023) have called for standardized, psychometrically evaluated measures that can be re-used by other researchers in order to ``build a cumulative evidence base in psychology'' (p.~2).
+This underlines how efforts to improve the replicability can be combined with the goal of increasing the generalisability of psychological research (Li et al., 2024; Syed, 2021).
+Li et al. (2024) have argued that replicable and generalisable results rely on stimulus sets with slight variations, more diverse samples, and data collection at a greater scale, which are all steps the TANGO--CC has taken.
+Openly sharing the TANGO--CC's materials will allow other researchers to (hopefully) replicate the results and deepen our cumulative understanding of social-cognitive development across diverse communities.
 
 \section{Conclusion}\label{conclusion}
 
-The TANGO--CC is a promising task to capture individual differences in social-cognitive development across diverse communities.
-The task was developed in two phases: (1) implementing the task's underlying functionality and estimating detailed psychometrics in one community, and (2) expanding the stimulus pool to accommodate diverse communities worldwide.
-The task's flexibility, minimal language demands, and engaging design make it a valuable task for cross-cultural research.
-The task showed satisfactory to high reliability (internal consistency) in a large dataset including 17 diverse communities.
-We hope that the TANGO--CC -- and its pragmatic construction process -- will inspire future cross-cultural studies to assess cognitive development in a wide range of communities.
+The TANGO--CC captures individual differences in social-cognitive development across diverse communities.
+The task's customizability, minimal language demands, and its efficient data collection method make it a valuable task for cross-cultural research.
+The task showed satisfactory to high reliability (internal consistency) in a large data set including 17 diverse communities on five continents.
+We hope that the TANGO--CC -- and its pragmatic construction process -- will provide a roadmap for future cross-cultural studies on cognitive development.
 
 \newpage
 
@@ -582,6 +603,24 @@ We hope that the TANGO--CC -- and its pragmatic construction process -- will ins
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-adolphs1999social}
+Adolphs, R. (1999). Social cognition and the human brain. \emph{Trends in Cognitive Sciences}, \emph{3}(12), 469--479. \url{https://doi.org/10.1016/S1364-6613(99)01399-6}
+
+\bibitem[\citeproctext]{ref-amir2020crosscultural}
+Amir, D., \& McAuliffe, K. (2020). Cross-cultural, developmental psychology: Integrating approaches and key insights. \emph{Evolution and Human Behavior}, \emph{41}(5), 430--444. \url{https://doi.org/10.1016/j.evolhumbehav.2020.06.006}
+
+\bibitem[\citeproctext]{ref-apicella2020weird}
+Apicella, C., Norenzayan, A., \& Henrich, J. (2020). Beyond {WEIRD}: {A} review of the last decade and a look ahead to the global laboratory of the future. \emph{Evolution and Human Behavior}, \emph{41}(5), 319--329. \url{https://doi.org/10.1016/j.evolhumbehav.2020.07.015}
+
+\bibitem[\citeproctext]{ref-arnett2008neglecteda}
+Arnett, J. J. (2008). The neglected 95\%: {Why American} psychology needs to become less {American}. \emph{American Psychologist}, \emph{63}(7), 602--614. \url{https://doi.org/10.1037/0003-066X.63.7.602}
+
+\bibitem[\citeproctext]{ref-astor2022gaze}
+Astor, K., \& Gredebäck, G. (2022). Gaze following in infancy: {Five} big questions that the field should answer. In \emph{Advances in {Child Development} and {Behavior}} (p. S0065240722000192). Elsevier. \url{https://doi.org/10.1016/bs.acdb.2022.04.003}
+
+\bibitem[\citeproctext]{ref-baron-cohen1985does}
+Baron-Cohen, S., Leslie, A. M., \& Frith, U. (1985). Does the autistic child have a "theory of mind" ? \emph{Cognition}, \emph{21}, 37--46. \url{https://doi.org/10.1016/0010-0277(85)90022-8}
+
 \bibitem[\citeproctext]{ref-beaudoin2020systematic}
 Beaudoin, C., Leblanc, É., Gagner, C., \& Beauchamp, M. H. (2020). Systematic {Review} and {Inventory} of {Theory} of {Mind Measures} for {Young Children}. \emph{Frontiers in Psychology}, \emph{10}, 2905. \url{https://doi.org/10.3389/fpsyg.2019.02905}
 
@@ -589,10 +628,13 @@ Beaudoin, C., Leblanc, É., Gagner, C., \& Beauchamp, M. H. (2020). Systematic {
 Bohn, M., \& Köymen, B. (2018). Common {Ground} and {Development}. \emph{Child Development Perspectives}, \emph{12}(2), 104--108. \url{https://doi.org/10.1111/cdep.12269}
 
 \bibitem[\citeproctext]{ref-bohn2024universal}
-Bohn, M., Prein, J. C., Ayikoru, A., Bednarski, F. M., Dzabatou, A., Frank, M. C., Henderson, A. M. E., Isabella, J., Kalbitz, J., Kanngiesser, P., Keşşafoğlu, D., Koymen, B., Manrique-Hernandez, M., Magazi, S., Mújica-Manrique, L., Ohlendorf, J., Olaoba, D., Pieters, W., Pope-Caldwell, S., \ldots{} Haun, D. (2024). \emph{A universal of human social cognition: {Children} from 17 communities process gaze in similar ways}. OSF. \url{https://doi.org/10.31234/osf.io/z3ahv}
+Bohn, M., Prein, J. C., Ayikoru, A., Bednarski, F. M., Dzabatou, A., Frank, M. C., Henderson, A. M. E., Isabella, J., Kalbitz, J., Kanngiesser, P., Keşşafoğlu, D., Koymen, B., Manrique-Hernandez, M., Magazi, S., Mújica-Manrique, L., Ohlendorf, J., Olaoba, D., Pieters, W., Pope-Caldwell, S., \ldots{} Haun, D. (2024). \emph{A universal of human social cognition: {Children} from 17 communities process gaze in similar ways}. PsyArXiv. \url{https://doi.org/10.31234/osf.io/z3ahv}
 
 \bibitem[\citeproctext]{ref-bourdage2023evaluation}
 Bourdage, R., Narme, P., Neeskens, R., Papma, J., \& Franzen, S. (2023). An {Evaluation} of {Cross-Cultural Adaptations} of {Social Cognition Testing}: {A Systematic Review}. \emph{Neuropsychology Review}. \url{https://doi.org/10.1007/s11065-023-09616-0}
+
+\bibitem[\citeproctext]{ref-broesch2023roadmap}
+Broesch, T., Lew-Levy, S., Kärtner, J., Kanngiesser, P., \& Kline, M. (2023). A roadmap to doing culturally grounded developmental science. \emph{Review of Philosophy and Psychology}, \emph{14}(2), 587--609. \url{https://doi.org/10.1007/s13164-022-00636-y}
 
 \bibitem[\citeproctext]{ref-burkner2017brms}
 Bürkner, P.-C. (2017). Brms: {An R Package} for {Bayesian Multilevel Models Using Stan}. \emph{Journal of Statistical Software}, \emph{80}(1), 1--28. \url{https://doi.org/10.18637/jss.v080.i01}
@@ -603,14 +645,14 @@ Bürkner, P.-C. (2018). Advanced {Bayesian Multilevel Modeling} with the {R Pack
 \bibitem[\citeproctext]{ref-callaghan2011early}
 Callaghan, T., Moll, H., Rakoczy, H., Warneken, F., Liszkowski, U., Behne, T., \& Tomasello, M. (2011). Early social cognition in three cultural contexts. \emph{Monographs of the Society for Research in Child Development}, \emph{76}(2), vii--viii, 1--142. \url{https://doi.org/10.1111/j.1540-5834.2011.00603.x}
 
-\bibitem[\citeproctext]{ref-chasiotis2006theory}
-Chasiotis, A., Kiessling, F., Hofer, J., \& Campos, D. (2006). Theory of mind and inhibitory control in three cultures: {Conflict} inhibition predicts false belief understanding in {Germany}, {Costa Rica} and {Cameroon}. \emph{International Journal of Behavioral Development}, \emph{30}(3), 249--260. \url{https://doi.org/10.1177/0165025406066759}
-
 \bibitem[\citeproctext]{ref-cohen1988statistical}
 Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences} (2nd ed). L. Erlbaum Associates.
 
 \bibitem[\citeproctext]{ref-cohen1992power}
 Cohen, J. (1992). A power primer. \emph{Psychological Bulletin}, \emph{112}(1), 155--159. \url{https://doi.org/10.1037/0033-2909.112.1.155}
+
+\bibitem[\citeproctext]{ref-decety2020social}
+Decety, J. (Ed.). (2020). \emph{The social brain: {A} developmental perspective} (pp. xii, 426). The MIT Press. \url{https://doi.org/10.7551/mitpress/11970.001.0001}
 
 \bibitem[\citeproctext]{ref-delbianco2019developmental}
 Del Bianco, T., Falck-Ytter, T., Thorup, E., \& Gredebäck, G. (2019). The {Developmental Origins} of {Gaze-Following} in {Human Infants}. \emph{Infancy}, \emph{24}(3), 433--454. \url{https://doi.org/10.1111/infa.12276}
@@ -618,11 +660,20 @@ Del Bianco, T., Falck-Ytter, T., Thorup, E., \& Gredebäck, G. (2019). The {Deve
 \bibitem[\citeproctext]{ref-elfenbein2002universality}
 Elfenbein, H. A., \& Ambady, N. (2002). On the universality and cultural specificity of emotion recognition: {A} meta-analysis. \emph{Psychological Bulletin}, \emph{128}(2), 203--235. \url{https://doi.org/10.1037/0033-2909.128.2.203}
 
+\bibitem[\citeproctext]{ref-elson2023psychological}
+Elson, M., Hussey, I., Alsalti, T., \& Arslan, R. C. (2023). Psychological measures aren't toothbrushes. \emph{Communications Psychology}, \emph{1}(1), 1--4. \url{https://doi.org/10.1038/s44271-023-00026-9}
+
 \bibitem[\citeproctext]{ref-field2012discovering}
 Field, A., Miles, J., \& Field, Z. (2012). \emph{Discovering statistics using {R}}. Sage.
 
-\bibitem[\citeproctext]{ref-fujita2022theory}
-Fujita, N., Devine, R. T., \& Hughes, C. (2022). Theory of mind and executive function in early childhood: {A} cross-cultural investigation. \emph{Cognitive Development}, \emph{61}, 101150. \url{https://doi.org/10.1016/j.cogdev.2021.101150}
+\bibitem[\citeproctext]{ref-frith2007social}
+Frith, C. D., \& Frith, U. (2007). Social {Cognition} in {Humans}. \emph{Current Biology}, \emph{17}(16), R724--R732. \url{https://doi.org/10.1016/j.cub.2007.05.068}
+
+\bibitem[\citeproctext]{ref-gagarina2012main}
+Gagarina, N., Klop, D., Kunnari, S., Tantele, K., Välimaa, T., Balčiūnienė, I., Bohnacker, U., \& Walters, J. (2012). \emph{{MAIN}: {Multilingual Assessment Instrument} for {Narratives}}. Zentrum f{ü}r Allgemeine Sprachwissenschaft.
+
+\bibitem[\citeproctext]{ref-gagarina2020new}
+Gagarina, N., \& Lindgren, J. (2020). New language versions of {MAIN}: {Multilingual Assessment Instrument} for {Narratives} -- {Revised}. \emph{ZAS Papers in Linguistics}, \emph{64}, 274. \url{https://doi.org/10.21248/zaspil.64.2020.543}
 
 \bibitem[\citeproctext]{ref-gutchess2023considerationa}
 Gutchess, A., \& Rajaram, S. (2023). Consideration of culture in cognition: {How} we can enrich methodology and theory. \emph{Psychonomic Bulletin \& Review}, \emph{30}(3), 914--931. \url{https://doi.org/10.3758/s13423-022-02227-5}
@@ -642,12 +693,6 @@ Hernik, M., \& Broesch, T. (2019). Infant gaze following depends on communicativ
 \bibitem[\citeproctext]{ref-hughes2000good}
 Hughes, C., Adlam, A., Happé, F., Jackson, J., Taylor, A., \& Caspi, A. (2000). Good {Test}-{Retest Reliability} for {Standard} and {Advanced False}-{Belief Tasks} across a {Wide Range} of {Abilities}. \emph{Journal of Child Psychology and Psychiatry}, \emph{41}(4), 483--490. \url{https://doi.org/10.1111/1469-7610.00633}
 
-\bibitem[\citeproctext]{ref-hughes2014lost}
-Hughes, C., Devine, R. T., Ensor, R., Koyasu, M., Mizokawa, A., \& Lecce, S. (2014). Lost in {Translation}? {Comparing British}, {Japanese}, and {Italian Children}'s {Theory-of-Mind Performance}. \emph{Child Development Research}, \emph{2014}, e893492. \url{https://doi.org/10.1155/2014/893492}
-
-\bibitem[\citeproctext]{ref-hughes2018does}
-Hughes, C., Devine, R. T., \& Wang, Z. (2018). Does {Parental Mind-Mindedness Account} for {Cross-Cultural Differences} in {Preschoolers}' {Theory} of {Mind}? \emph{Child Development}, \emph{89}(4), 1296--1310. \url{https://doi.org/10.1111/cdev.12746}
-
 \bibitem[\citeproctext]{ref-kline1999handbook}
 Kline, P. (1999). \emph{The {Handbook} of {Psychological Testing}} (2nd ed.). Routledge.
 
@@ -656,6 +701,12 @@ Krys, K., De Almeida, I., Wasiel, A., \& Vignoles, V. L. (2024). {WEIRD}--{Confu
 
 \bibitem[\citeproctext]{ref-kusano2024mismeasure}
 Kusano, K., Napier, J., \& Jost, J. (2024). \emph{The {Mismeasure} of {Culture}: {When Measurement Invariance Requirements Hinder Cross-Cultural Research} in {Psychology}}. OSF. \url{https://doi.org/10.31234/osf.io/9qe2k}
+
+\bibitem[\citeproctext]{ref-li2024developmental}
+Li, W., Germine, L. T., Mehr, S. A., Srinivasan, M., \& Hartshorne, J. (2024). Developmental psychologists should adopt citizen science to improve generalization and reproducibility. \emph{Infant and Child Development}, \emph{33}(1), e2348. \url{https://doi.org/10.1002/icd.2348}
+
+\bibitem[\citeproctext]{ref-liebal2018crosscultural}
+Liebal, K., \& Haun, D. B. M. (2018). Why {Cross-Cultural Psychology Is Incomplete Without Comparative} and {Developmental Perspectives}. \emph{Journal of Cross-Cultural Psychology}, \emph{49}(5), 751--763. \url{https://doi.org/10.1177/0022022117738085}
 
 \bibitem[\citeproctext]{ref-lillard1998ethnopsychologies}
 Lillard, A. (1998). Ethnopsychologies: {Cultural} variations in theories of mind. \emph{Psychological Bulletin}, \emph{123}(1), 3--32. \url{https://doi.org/10.1037/0033-2909.123.1.3}
@@ -673,7 +724,7 @@ Nielsen, M., Haun, D., Kärtner, J., \& Legare, C. H. (2017). The persistent sam
 Peña, E. D. (2007). Lost in {Translation}: {Methodological Considerations} in {Cross-Cultural Research}. \emph{Child Development}, \emph{78}(4), 1255--1264. \url{https://www.jstor.org/stable/4620701}
 
 \bibitem[\citeproctext]{ref-prein2023tango}
-Prein, J. C., Kalinke, S., Haun, D. B. M., \& Bohn, M. (2023). {TANGO}: {A} reliable, open-source, browser-based task to assess individual differences in gaze understanding in 3 to 5-year-old children and adults. \emph{Behavior Research Methods}. \url{https://doi.org/10.3758/s13428-023-02159-5}
+Prein, J. C., Kalinke, S., Haun, D. B. M., \& Bohn, M. (2023). {TANGO}: {A} reliable, open-source, browser-based task to assess individual differences in gaze understanding in 3 to 5-year-old children and adults. \emph{Behavior Research Methods}, \emph{56}(3), 2469--2485. \url{https://doi.org/10.3758/s13428-023-02159-5}
 
 \bibitem[\citeproctext]{ref-prein2024variation}
 Prein, J. C., Maurits, L., Werwach, A., Haun, D. B. M., \& Bohn, M. (2024). \emph{Variation in gaze following across the life span: {A} process-level perspective}. PsyArXiv. \url{https://doi.org/10.31234/osf.io/dy73a}
@@ -696,20 +747,32 @@ Selcuk, B., Gonultas, S., \& Ekerim-Akbulut, M. (2023). Development and use of t
 \bibitem[\citeproctext]{ref-shepherd2010following}
 Shepherd, S. (2010). Following {Gaze}: {Gaze-Following Behavior} as a {Window} into {Social Cognition}. \emph{Frontiers in Integrative Neuroscience}, \emph{4}(5). \url{https://doi.org/10.3389/fnint.2010.00005}
 
-\bibitem[\citeproctext]{ref-stengelin2020cultural}
-Stengelin, R., Hepach, R., \& Haun, D. B. M. (2020). Cultural variation in young children's social motivation for peer collaboration and its relation to the ontogeny of {Theory} of {Mind}. \emph{PLOS ONE}, \emph{15}(11), e0242071. \url{https://doi.org/10.1371/journal.pone.0242071}
+\bibitem[\citeproctext]{ref-syed2021reproducibility}
+Syed, M. (2021). \emph{Reproducibility, {Diversity}, and the {Crisis} of {Inference} in {Psychology}}. OSF. \url{https://doi.org/10.31234/osf.io/89buj}
 
 \bibitem[\citeproctext]{ref-tang2024slow}
 Tang, Y., Gonzalez, M. R., \& Deák, G. O. (2024). The slow emergence of gaze- and point-following: {A} longitudinal study of infants from 4 to 12 months. \emph{Developmental Science}, \emph{27}(3), e13457. \url{https://doi.org/10.1111/desc.13457}
 
-\bibitem[\citeproctext]{ref-taumoepeau2019crosscultural}
-Taumoepeau, M., Sadeghi, S., \& Nobilo, A. (2019). Cross-cultural differences in children's theory of mind in {Iran} and {New Zealand}: {The} role of caregiver mental state talk. \emph{Cognitive Development}, \emph{51}, 32--45. \url{https://doi.org/10.1016/j.cogdev.2019.05.004}
+\bibitem[\citeproctext]{ref-thalmayer2021neglecteda}
+Thalmayer, A. G., Toscanelli, C., \& Arnett, J. J. (2021). The neglected 95\% revisited: {Is American} psychology becoming less {American}? \emph{American Psychologist}, \emph{76}(1), 116--129. \url{https://doi.org/10.1037/amp0000622}
 
 \bibitem[\citeproctext]{ref-tomasello2007reliance}
 Tomasello, M., Hare, B., Lehmann, H., \& Call, J. (2007). Reliance on head versus eyes in the gaze following of great apes and human infants: The cooperative eye hypothesis. \emph{Journal of Human Evolution}, \emph{52}(3), 314--320. \url{https://doi.org/10.1016/j.jhevol.2006.10.001}
 
+\bibitem[\citeproctext]{ref-torrens2023einfluss}
+Torréns, M. G., Wefers, H., \& Kärtner, J. (2023). Der {Einfluss} von {Kultur} auf die {Entwicklung} in den ersten drei {Lebensjahren}. \emph{Zeitschrift f{ü}r Entwicklungspsychologie Und P{ä}dagogische Psychologie}, \emph{55}(1), 14--18. \url{https://doi.org/10.1026/0049-8637/a000271}
+
 \bibitem[\citeproctext]{ref-waschl2022crosscultural}
 Waschl, N., \& Chen, M. (2022). Cross-{Cultural Considerations} for {Adapting Valid Psychoeducational Assessments}. In O. S. Tan, K. K. Poon, B. A. O'Brien, \& A. Rifkin-Graboi (Eds.), \emph{Early {Childhood Development} and {Education} in {Singapore}} (pp. 113--140). Springer. \url{https://doi.org/10.1007/978-981-16-7405-1_7}
+
+\bibitem[\citeproctext]{ref-wefers2023universality}
+Wefers, H., Schuhmacher, N., Chacón, L. H., \& Kärtner, J. (2023). Universality without uniformity -- infants' reactions to unresponsive partners in urban {Germany} and rural {Ecuador}. \emph{Memory \& Cognition}, \emph{51}(3), 807--823. \url{https://doi.org/10.3758/s13421-022-01318-x}
+
+\bibitem[\citeproctext]{ref-wimmer1983beliefs}
+Wimmer, H., \& Perner, J. (1983). Beliefs about beliefs: {Representation} and constraining function of wrong beliefs in young children's understanding of deception. \emph{Cognition}, \emph{13}(1), 103--128. \url{https://doi.org/10.1016/0010-0277(83)90004-5}
+
+\bibitem[\citeproctext]{ref-zeigler-hill2015how}
+Zeigler-Hill, V., Welling, L. L., \& Shackelford, T. K. (2015). How can an understanding of evolutionary psychology contribute to social psychology? In \emph{Evolutionary perspectives on social psychology} (pp. 3--12). Springer, Cham.
 
 \end{CSLReferences}
 
