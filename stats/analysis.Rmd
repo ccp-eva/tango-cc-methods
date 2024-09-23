@@ -463,23 +463,6 @@ saveRDS(int_con, "../saves/internal_consistency.rds")
 
 # Combine plots
 
-```{r}
-library(ggplot2)
-library(ggridges)
-
-# Create example data
-data <- data.frame(
-  x = rnorm(1000),
-  y = as.factor(rep(1:10, each = 100))
-)
-
-# Plot using geom_density_ridges
-ggplot(data, aes(x = x, y = y)) +
-  geom_density_ridges()
-
-```
-
-
 ```{r combine_plot}
 odd_even_plot <- readRDS("../saves/odd_even_plot.rds")
 stratified_plot <- readRDS("../saves/stratified_plot.rds")

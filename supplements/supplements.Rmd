@@ -93,6 +93,69 @@ set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
+```{r}
+data <- read_csv("../data/data.csv") %>%
+  mutate(continent = ifelse(
+    community %in% c("leipzig", "plymouth"), "Europe",
+    ifelse(
+      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "Americas",
+             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+    )
+  ))%>%
+  mutate(continent = factor(continent, levels = c("Americas", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+  mutate(community = recode(community,
+                            akure = "Akure (Nigeria)",
+                            leipzig = "Leipzig (Germany)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)",
+                            chimfunshi = "Chimfunshi (Zambia)",
+                            mexico = "Ocuilan (Mexico)",
+                            plymouth = "Plymouth (UK)",
+                            beijing = "Beijing (China)",
+                            india = "Pune (India)",
+                            buenos_aires = "Buenos Aires (Argentina)",
+                            auckland = "Auckland (New Zealand)",
+                            turkey = "Malatya (Türkiye)",
+                            bandongo = "Bandongo (Rep. Congo)",
+                            bayaka = "BaYaka (Rep. Congo)",
+                            uganda = "Nyabyeya (Uganda)"),
+      imprecision = abs(clickdistfromtargetcenterx)/160,
+      centrality = as.character(abs(5-targetposition)), 
+      age_group = floor(ageinyears)) %>% 
+  filter(trialtype == "test", voiceover == F) %>%
+  mutate(trialnr = as.numeric(factor(trialnr))) 
+```
+
+# Participants
+
+```{r demtable, echo=F}
+demtab <- data %>%
+  separate(community, into = c("community", "country"), sep = " \\(")%>%
+  mutate(country = str_remove(country, "\\("),
+         country = str_remove(country, "\\)"))%>%
+  distinct(subjid, .keep_all = T)%>%
+  group_by(community, country, continent)%>%
+  summarise(N = n_distinct(subjid), 
+            mean_age = mean(ageinyears),
+            min_age = min(ageinyears), 
+            max_age = max(ageinyears))%>%
+  mutate_if(is.numeric, format, digits = 2, nsmall = 2)%>%
+  mutate(age = mean_age, 
+         range = paste(min_age, " - ", max_age)) %>%
+  select(-c(mean_age, min_age, max_age))%>%
+  arrange(community)
+
+
+kableExtra::kable(demtab,
+             col.names = c("Community", "Country", "Continent", "N", "Sex (male)", "Age (range)"),
+              caption = "Participant demographics.", 
+             format="latex", booktabs=TRUE
+             )
+```
+
 # Voice-over script 
 The TANGO--CC was designed for a cross-cultural study by @bohn2024universal. For further information on the sample and further methodological choices, see their supplementary material (). 
 
