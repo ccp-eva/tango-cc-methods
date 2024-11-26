@@ -164,7 +164,7 @@ author:
       - "Resources"
       - "Writing - Review & Editing"   
   - name          : "Yufei Zong (ORCID: 0009-0000-5012-0244)"
-    affiliation   : "14"
+    affiliation   : "14,15"
     role:
       - "Methodology"
       - "Resources"
@@ -215,6 +215,8 @@ affiliation:
     institution   : "Budongo Conservation Field Station, Uganda"
   - id            : "14"
     institution   : "CAS Key Laboratory of Behavioral Science, Institute of Psychology, Chinese Academy of Sciences, China"
+  - id            : "15"
+    institution   : "Department of Cognitive Sciences, University of California Irvine, USA"
   - id            : "+"
     institution   : "joint last author"
     
@@ -253,10 +255,7 @@ header-includes:
 
 csl               : "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"
 documentclass     : "apa7"
-output            : 
-  papaja::apa6_pdf:
-    latex_engine: xelatex
-    keep_tex: true
+output            : papaja::apa6_word
 editor_options    : 
   markdown: 
     wrap: sentence
